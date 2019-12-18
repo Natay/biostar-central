@@ -14,6 +14,7 @@ setup(
         "biostar.forum",
         "biostar.publisher",
         "biostar.recipes",
+        "biostar.chat",
         "themes"
     ],
 )
