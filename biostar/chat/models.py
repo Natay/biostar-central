@@ -9,15 +9,23 @@ class Room:
     pass
 
 
-class Chat:
-    pass
-
-
 class ChatMessage:
 
     body = ''
-    date = ''
-    deleted = False
+    html = ''
+
+    pass
+
+
+class Chat:
+
+    message = models.ForeignKey(ChatMessage, on_delete=models.SET_NULL, null=True)
+
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+    sender = models.ForeignKey
 
 
     pass
+
+

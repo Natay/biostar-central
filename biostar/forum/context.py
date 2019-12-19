@@ -1,5 +1,6 @@
 from biostar import VERSION
 from django.conf import settings
+
 def forum(request):
     '''
     Additional context applied to each request.
