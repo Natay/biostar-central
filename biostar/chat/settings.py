@@ -48,6 +48,8 @@ MIDDLEWARE += [
     #'biostar.forum.middleware.benchmark',
 ]
 
+
+ASGI_APPLICATION = 'chat.routing.application'
 # Post types displayed when creating, empty list displays all types.
 ALLOWED_POST_TYPES = []
 
@@ -63,7 +65,7 @@ PAGEDOWN_WIDGET_CSS = ('pagedown/demo/browser/demo.css', "lib/pagedown.css",)
 
 INSTALLED_APPS = DEFAULT_APPS + CHAT_APPS + ACCOUNTS_APPS + EMAILER_APP
 
-ROOT_URLCONF = 'biostar.forum.urls'
+ROOT_URLCONF = 'biostar.chat.urls'
 
 WSGI_APPLICATION = 'biostar.wsgi.application'
 
