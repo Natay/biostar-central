@@ -10,7 +10,7 @@ HTTP_PROTOCOL = "http"
 
 # Full file path to tags.
 # Each line is a list of comma separated tags.
-TAGS_OPTIONS_FILE = os.path.join(CUSTOM_THEME, 'tags.txt')
+TAGS_OPTIONS_FILE = os.path.join(CUSTOM_THEME, 'conf', 'tags.txt')
 
 # Post types displayed when creating, empty list displays all types.
 ALLOWED_POST_TYPES = ["Question", "Job", "Tutorial", "News"]

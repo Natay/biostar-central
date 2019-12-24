@@ -1,8 +1,8 @@
 # Inherit from the main settings file.
 
-# Inherit from the accounts settings file.
+# Inherit from the chat settings file.
 from biostar.accounts.settings import *
-
+from biostar.chat.settings import *
 # Django debug flag.
 DEBUG = True
 
@@ -22,7 +22,6 @@ TAGS_PER_PAGE = 50
 # Full file path to tags.
 # Each line is a list of comma separated tags.
 TAGS_OPTIONS_FILE = ''
-
 
 # Add list of contributors to the post list.
 ADD_THREAD_USERS = True
@@ -100,7 +99,7 @@ if DEBUG_TOOLBAR:
 # to avoid having to specify all the default styles
 PAGEDOWN_WIDGET_CSS = ('pagedown/demo/browser/demo.css', "lib/pagedown.css",)
 
-INSTALLED_APPS = DEFAULT_APPS + FORUM_APPS + ACCOUNTS_APPS + EMAILER_APP
+INSTALLED_APPS = DEFAULT_APPS + FORUM_APPS + ACCOUNTS_APPS + EMAILER_APP + CHAT_APP
 
 ROOT_URLCONF = 'biostar.forum.urls'
 
@@ -114,6 +113,9 @@ COUNT_INTERVAL_WEEKS = 10000
 # This flag is used flag situation where a data migration is in progress.
 # Allows us to turn off certain type of actions (for example sending emails).
 DATA_MIGRATION = False
+
+# Run chat using async methods.
+ASYNC_CHAT = False
 
 # Tries to load up secret settings from a predetermined module
 # This is for convenience only!

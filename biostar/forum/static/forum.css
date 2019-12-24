@@ -1,3 +1,6 @@
+body > .widen.container {
+    width: 97%;
+}
 body {
     background-color: #f8f8f9 !important;
     padding-top: 1rem;
@@ -926,11 +929,6 @@ pre {
 
 @media all and (max-width: 1200px) {
 
-    .menu-tablet {
-        display: none;
-    }
-
-
     .header-menu {
         display: none;
         margin-right: 0;
@@ -953,15 +951,10 @@ pre {
 
 }
 
-@media all and (max-width: 992px) {
+@media all and (max-width: 830px) {
 
     .menu-tablet_small {
         display: none !important;
-    }
-
-    .ui.menu:not(.vertical) .left.item {
-        display: inline ;
-        margin-right: 0 !important;
     }
 
     .header-menu {
@@ -969,14 +962,10 @@ pre {
         //margin-right: 0 ;
     }
 
-    .ui.label.rev {
-        display: inline;
-    }
 
     .header-menu .menu-tablet_small {
         display: block !important;
     }
-
     .thread-users {
         display: none;
     }
@@ -985,6 +974,23 @@ pre {
         display: block !important;
         width: fit-content;
 
+    }
+
+}
+@media all and (max-width: 992px) {
+
+    .menu-tablet {
+        display: none;
+    }
+
+    .ui.menu:not(.vertical) .left.item {
+        display: inline ;
+        margin-right: 0 !important;
+    }
+
+
+    .ui.label.rev {
+        display: inline;
     }
 
     .post-form{

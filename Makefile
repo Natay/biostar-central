@@ -58,6 +58,15 @@ recipes:
 	@echo DATABASE_NAME=${DATABASE_NAME}
 
 
+chat:
+	$(eval DJANGO_SETTINGS_MODULE := biostar.chat.settings)
+	$(eval DJANGO_APP := biostar.chat)
+
+	@echo DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+	@echo DJANGO_APP=${DJANGO_APP}
+	@echo DATABASE_NAME=${DATABASE_NAME}
+
+
 bioconductor:
 	$(eval DJANGO_SETTINGS_MODULE := themes.bioconductor.settings)
 	$(eval DJANGO_APP := biostar.forum)

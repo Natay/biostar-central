@@ -6,6 +6,7 @@ from django.urls import include, path  # For django versions from 2.0 and up
 import debug_toolbar
 from biostar.forum import views
 from biostar.forum import ajax
+import biostar.chat.urls as chat_patterns
 import biostar.accounts.urls as account_patterns
 
 urlpatterns = [
@@ -70,6 +71,9 @@ if settings.DEBUG:
 
     ] + urlpatterns
 
+
+if settings.ENABLE_CHAT:
+    urlpatterns += [path('chat/', include(chat_patterns))]
 
 
 
