@@ -473,6 +473,37 @@ def ajax_search(request):
     return ajax_success(html=results_html, msg="success")
 
 
+@ajax_error_wrapper(method="GET", login_required=True)
+def ajax_create_room():
+    return
+
+from django.core.validators import validate_email
+@ajax_error_wrapper(method="GET", login_required=True)
+def ajax_room_list():
+
+    rooms = ''
+
+    tmpl = loader.get_template("chat/room_list.html")
+    context = dict(results=results, query=query)
+
+    results_html = tmpl.render(context)
+
+    return
+
+
+@ajax_error_wrapper(method="GET", login_required=True)
+def ajax_room_view(request):
+
+    rooms = ''
+
+    tmpl = loader.get_template("chat/room_view.html")
+    context = dict(results=results, query=query)
+
+    results_html = tmpl.render(context)
+
+    return
+
+
 @ratelimit(key='ip', rate='50/h')
 @ratelimit(key='ip', rate='10/m')
 def ajax_tags_search(request):
