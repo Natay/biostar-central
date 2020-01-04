@@ -2,11 +2,12 @@ from django.db import models
 #from django.contrib.auth import
 from biostar.accounts.models import User
 
-class Room(models.Model):
+
+class ChatThread(models.Model):
 
     users = models.ManyToManyField(User)
-
-    pass
+    name = models.CharField(default="Chat room", max_length=300)
+    uid = models.CharField(unique=True, max_length=300)
 
 
 class ChatMessage(models.Model):
@@ -16,16 +17,9 @@ class ChatMessage(models.Model):
 
     # This is the  HTML that gets displayed.
     html = models.TextField(default='')
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
-    pass
-
-
-class Chat(models.Model):
-
-    message = models.ForeignKey(ChatMessage, on_delete=models.SET_NULL, null=True)
-
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-
-    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
 
 

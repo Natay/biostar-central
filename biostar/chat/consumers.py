@@ -15,8 +15,6 @@ class SyncChatConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        print("FOOOOO")
-
         self.accept()
 
     def disconnect(self, close_code):
