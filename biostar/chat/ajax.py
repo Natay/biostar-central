@@ -85,12 +85,14 @@ def ajax_room_view(request, room_uid):
 
     room = ChatRoom.objects.filter(uid=room_uid).first()
     if room:
-        messages = room.chatmessage_set.order_by('-creation_date')
+        messages = room.chatmessage_set.order_by('creation_date')
     else:
         messages = []
 
     tmpl = loader.get_template("chat/room_view.html")
-    context = dict(messages=messages, room=room, room_name_json=mark_safe(room_uid))
+
+    context = dict(messages=messages, room=room, user=request.user,
+                   room_name_json=mark_safe(room_uid))
 
     messages_html = tmpl.render(context)
 

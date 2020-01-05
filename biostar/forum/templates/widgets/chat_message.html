@@ -1,0 +1,27 @@
+{% load forum_tags %}
+
+
+<div class="chat-msg">
+
+    <div class="chat-container">
+        <a href="{% url "user_profile"  author.profile.uid %}">
+
+            <div class="ui avatar image">
+                <img class="ui centered image thread-users"
+                     src="{% gravatar user=author size=80 %}">
+            </div>
+
+        </a>
+        <a href="{% url "user_profile"  author.profile.uid %}">
+            <b>
+            {{ author.profile.name|truncatechars:50 }}
+            </b>
+        </a>
+        <span class="muted">{{ creation_date|timesince|truncatechars:12 }} ago</span>
+
+        <div style="padding-top: 2px;padding-bottom: 2px; margin-left: 33px">
+            {{ html|safe }}
+        </div>
+    </div>
+
+</div>

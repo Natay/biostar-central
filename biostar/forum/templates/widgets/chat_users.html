@@ -1,0 +1,7 @@
+{% load forum_tags %}
+{% for user in users %}
+    <a class="ui mini avatar list-avatar image"
+       href="{% url "user_profile" user.profile.uid %}">
+        <img src="{% gravatar user=user size=70 %}">
+    </a>
+{% endfor %}

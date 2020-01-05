@@ -1,38 +1,33 @@
 {% load forum_tags %}
-
+{% load humanize %}
 <div class="ui segment">
-    <div class="ui header">
-        Chat
-    </div>
+    <b>
+        Biostars Chat
+    </b>
 
     <div class="ui relaxed divided list">
 
         {% for room in chat_rooms %}
             <div class="item">
-                <div class="content">
-                    <a href="{% url "user_profile"  room.creator.profile.uid %}">
-
-                            <div class="ui avatar image">
-                                <img class="ui tiny centered image thread-users"
-                                     src="{% gravatar user=room.creator size=80 %}">
-                            </div>
-
-                    </a>
-
-                    <a class=" chat-room" style="display: contents !important;" data-uid="{{ room.uid }}"  >{{ room.name }}</a>
-                     <div>
-                        {{ room.creator.profile.name|truncatechars:50 }}
+                <a class=" chat-room" data-uid="{{ room.uid }}"
+                   style="display: inline;padding-right: 20px;">{{ room.name }}</a>
+                <span>
+                {% get_chat_users room=room %}
+                    <i class="plus icon"></i>
+                    <div>
+                    {{ room.users.count|bignum }} people
                     </div>
-                    <div class="description">{{ room.users.all.count }}</div>
-                </div>
+                </span>
+
+
             </div>
         {% endfor %}
 
     </div>
 
-    Create a chat room.
+
     <div class="ui action fluid input">
-        <input class="ui input" id="room-name-input" type="text" placeholder="Enter a room name"/><br/>
+        <input class="ui input" id="room-name-input" type="text" placeholder="Create a chat room."/><br/>
         <button id="room-name-submit" type="button" value="Enter">Create</button>
     </div>
 

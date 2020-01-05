@@ -1,8 +1,15 @@
 import json
+from datetime import datetime
+
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 from biostar.chat.models import ChatRoom, ChatMessage
 from django.conf import settings
+from django.utils.timezone import utc
+
+
+def now():
+    return datetime.utcnow().replace(tzinfo=utc)
 
 
 class SyncChatConsumer(WebsocketConsumer):
@@ -52,7 +59,13 @@ class SyncChatConsumer(WebsocketConsumer):
 
         user = self.scope['user']
 
-        print(text_data, user)
+        # Get the current chat room
+        room = ChatRoom.objects.filter(uid=self.room_name).first()
+
+        msg = ChatMessage.objects.create(content=message, author=user, room=room)
+        # Create the message
+
+        #print(text_data, user, self.room_name, msg)
 
     # Receive message from room group
     def chat_message(self, event):
@@ -62,7 +75,6 @@ class SyncChatConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'message': message
         }))
-
 
 
 class AsyncChatConsumer(AsyncWebsocketConsumer):

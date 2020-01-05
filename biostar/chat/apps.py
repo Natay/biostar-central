@@ -26,7 +26,6 @@ def init_chat(sender, **kwargs):
     if room:
         if settings.DEBUG:
             ChatRoom.objects.filter(uid=uid).delete()
-        return
 
     room = ChatRoom.objects.create(name="Hello from biostars!", uid=uid, creator=user)
     # Create the chat message

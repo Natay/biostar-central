@@ -1,26 +1,18 @@
 {% load humanize %}
 {% load forum_tags %}
 
-<div class="ui segment" style="background-color: #e1f0dd">
+<div class="ui segment" style="background-color: #f6f6f6">
 
-    <div class="ui secondary header">{{ room.name }}
-    </div>
-    <a href="{% url "user_profile"  room.creator.profile.uid %}">
+    <b>{{ room.name }}
+        <a style="float: right"><i class="user plus icon"></i>ADD</a>
+    </b>
 
-        <div class="ui avatar image">
-            <img class="ui tiny centered image thread-users"
-                 src="{% gravatar user=room.creator size=80 %}">
-        </div>
+    <div id="chat-log" class="ui blue segment" style="width: 100%; height: 300px; overflow-y: auto;background-color: #fcfcfc;">
 
-    </a>
-    <a  href="{% url "user_profile"  room.creator.profile.uid %}">
-        {{ room.creator.profile.name|truncatechars:50 }}
-    </a>
+        {% for message in messages %}
+            {% chat_message message=message %}
+        {% endfor %}
 
-
-    <div class="muted">{{ room.lastedit_date }}</div>
-    <div id="chat-log" class="ui blue segment" style="width: 100%; height: 300px; overflow-y: auto" rows="20">
-        lklkkl
     </div>
 
     <div class="ui action input">
@@ -41,10 +33,13 @@
         var data = JSON.parse(e.data);
         var message = data['message'];
         //let value = $('#chat-log').val();
-        message += message + '<br>';
-
+        //let new_message = message + '<br>';
         $('#chat-log').append(message);
-        alert(value);
+
+        $('#chat-log').animate({scrollTop: $('#chat-log').prop("scrollHeight")}, 500)
+        //let obj = document.getElementById("#chat-log");
+        //obj.scrollTop = obj.scrollHeight - obj.clientHeight;
+        //alert(value);
     };
 
     chatSocket.onclose = function (e) {

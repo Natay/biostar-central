@@ -22,8 +22,9 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 
 from biostar.chat.models import ChatRoom
+from biostar.utils.markdown import parse
 from biostar.accounts.models import Profile, Message
-from biostar.forum import const, auth
+from biostar.forum import const, auth, util
 from biostar.forum.models import Post, Vote, Award, Subscription
 
 User = get_user_model()
@@ -477,14 +478,44 @@ def default_feed(user):
     recent_replies = recent_replies.select_related("author__profile", "author")
     recent_replies = recent_replies.order_by("-pk")[:settings.REPLIES_FEED_COUNT]
 
-    if settings.ENABLE_CHAT and user.is_authenticated:
+    enabled_chat = settings.ENABLE_CHAT and user.is_authenticated
+    if enabled_chat:
         chat_rooms = user.chatroom_set.all()
     else:
         chat_rooms = None
 
     context = dict(recent_votes=recent_votes, recent_awards=recent_awards,
                    recent_locations=recent_locations, recent_replies=recent_replies,
-                   user=user, chat_rooms=chat_rooms, enable=settings.ENABLE_CHAT)
+                   user=user, chat_rooms=chat_rooms, enable=enabled_chat)
+    return context
+
+
+@register.inclusion_tag('widgets/chat_message.html')
+def chat_message(message):
+    context = dict(author=message.author, creation_date=message.creation_date,
+                   html=message.html)
+    return context
+
+
+@register.inclusion_tag('widgets/chat_message.html')
+def render_message(message_text, user):
+
+    html = parse(text=message_text)
+
+    context = dict(author=user, creation_date=util.now(), html=html)
+    return context
+
+
+@register.simple_tag
+def now():
+
+    return util.now()
+
+
+@register.inclusion_tag('widgets/chat_users.html')
+def get_chat_users(room):
+
+    context = dict(users=room.users.all().order_by('-profile__score')[:3])
     return context
 
 

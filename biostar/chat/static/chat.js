@@ -45,27 +45,28 @@ function room_view(uid) {
 
     let container = $('#chat-insert');
 
-    $.ajax('/chat/ajax/' + uid + '/',{
+    $.ajax('/chat/ajax/' + uid + '/', {
         type: 'GET',
-            dataType: 'json',
-            data: {
-            'uid':uid
-            },
-            success: function (data) {
-            if (data.status === 'error'){
+        dataType: 'json',
+        data: {
+            'uid': uid
+        },
+        success: function (data) {
+            if (data.status === 'error') {
 
-            }else{
+            } else {
                 //alert(container.html());
                 container.html(data.html);
-                container.scrollTop = container.scrollHeight;
-                let obj = document.getElementById("#chat-insert");
-                obj.scrollTop = obj.scrollHeight;
+                $('#chat-log').animate({scrollTop: $('#chat-log').prop("scrollHeight")}, 500)
+                //$('#chat-log').scroll()//$('#chat-log').height();
+                //let obj = document.getElementById("#chat-log");
+                //obj.scrollTop = obj.scrollHeight - obj.clientHeight;
             }
 
-            },
-            error: function (xhr, status, text) {
-                error_message($(this), xhr, status, text)
-            }
+        },
+        error: function (xhr, status, text) {
+            error_message($(this), xhr, status, text)
+        }
     });
 
     container.html();
@@ -73,7 +74,8 @@ function room_view(uid) {
 
 
 $(document).ready(function () {
-      $(this).on('click', '.chat-room', function () {
+    $(this).on('click', '.chat-room', function (event) {
+        event.preventDefault();
         let uid = $(this).data('uid');
         room_view(uid)
 
