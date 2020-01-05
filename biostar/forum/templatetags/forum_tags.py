@@ -21,6 +21,7 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 
+from biostar.chat.models import ChatRoom
 from biostar.accounts.models import Profile, Message
 from biostar.forum import const, auth
 from biostar.forum.models import Post, Vote, Award, Subscription
@@ -476,9 +477,13 @@ def default_feed(user):
     recent_replies = recent_replies.select_related("author__profile", "author")
     recent_replies = recent_replies.order_by("-pk")[:settings.REPLIES_FEED_COUNT]
 
+    if settings.ENABLE_CHAT and user.is_authenticated:
+        chat_rooms = user.chatroom_set.all()
+    else:
+        chat_rooms = None
     context = dict(recent_votes=recent_votes, recent_awards=recent_awards,
                    recent_locations=recent_locations, recent_replies=recent_replies,
-                   user=user)
+                   user=user, chat_rooms=chat_rooms)
     return context
 
 

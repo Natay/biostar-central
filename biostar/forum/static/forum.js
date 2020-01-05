@@ -504,34 +504,6 @@ function drop(ev, elem_id) {
 
 }
 
-function chat_list(user_uid) {
-    // Show list of active chats a user has
-    var chat_list_url = '/ajax/chat/list/';
-    var container = $('#contain-chat');
-
-    $.ajax(chat_list_url,
-        {
-            type: 'GET',
-            dataType: 'json',
-            ContentType: 'application/json',
-            data: {
-                'uid': user_uid
-            },
-            success: function (data) {
-                if (data.status === 'error') {
-                    popup_message(container, data.msg, data.status);
-                } else {
-                    //var contain = "<div class='ui message'>{0}, most recent: {1}</div>".f(data.nposts, data.most_recent_url);
-                    container.html(data.html)
-                }
-            },
-            error: function (xhr, status, text) {
-                error_message(container, xhr, status, text)
-            }
-        })
-
-}
-
 function autocomplete_users(users_list) {
     // Add autocomplete to any text area element.
     var autocomplete = $('.autocomplete');

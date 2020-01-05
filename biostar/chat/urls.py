@@ -1,10 +1,14 @@
 from django.urls import re_path, path
-from biostar.chat import consumers, views
+from biostar.chat import consumers, views, ajax
 
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index, name='ajax_room_list'),
     path('<str:room_name>/', views.room, name='room'),
+    #path('room/<str:room_uid>/', ajax.ajax_room_view, name='ajax_room_view'),
+    # path('ajax/form/', ajax.inplace_form, name='inplace_form'),
+    # path('ajax/search/', ajax.ajax_search, name='ajax_search'),
+
 ]
 
 

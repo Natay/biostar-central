@@ -1,26 +1,11 @@
 {% load forum_tags %}
 {% load accounts_tags %}
 
+{% if chat_rooms %}
+{% include 'chat/room_list.html' with chat_rooms=chat_rooms %}
+{% endif %}
 
-<div class="ui segment">
-    <div class="ui header">
-        Chat Rooms
-    </div>
-    <div class="ui divider"></div>
-
-    {% for room in chat_rooms %}
-
-    {% endfor %}
-
-    Create or join a chat room.
-    <div class="ui action input">
-        <input class="ui input" id="room-name-input" type="text" placeholder="Enter a room name"/><br/>
-        <button id="room-name-submit" type="button" value="Enter">Search</button>
-    </div>
-
-
-</div>
-
+<div id="chat-insert"></div>
 
 <div class="ui large wrap-text">
 
@@ -118,3 +103,4 @@
     </div>
 
 </div>
+
