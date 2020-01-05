@@ -480,7 +480,7 @@ def default_feed(user):
 
     enabled_chat = settings.ENABLE_CHAT and user.is_authenticated
     if enabled_chat:
-        chat_rooms = user.chatroom_set.all()
+        chat_rooms = user.chatroom_set.order_by('creation_date')
     else:
         chat_rooms = None
 
@@ -510,6 +510,13 @@ def render_message(message_text, user):
 def now():
 
     return util.now()
+
+
+@register.inclusion_tag('chat/chat_room_detail.html')
+def chat_room_detail(room):
+
+    context = dict(room=room)
+    return context
 
 
 @register.inclusion_tag('widgets/chat_users.html')

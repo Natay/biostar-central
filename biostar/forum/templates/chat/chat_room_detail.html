@@ -1,0 +1,19 @@
+{% load forum_tags %}
+
+<div class="item">
+    <a class=" chat-room" data-uid="{{ room.uid }}"
+       style="display: inline;padding-right: 20px;">{{ room.name }}</a>
+
+    <span style="float: right">
+
+{% get_chat_users room=room %}
+        {% if room.users.count > 3 %}
+            <i class="plus icon"></i>
+        {% endif %}
+
+</span>
+    <div>
+        {{ room.users.count|bignum }} {% if room.users.count > 1 %}people{% else %}person{% endif %}
+    </div>
+
+</div>

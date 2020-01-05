@@ -6,25 +6,14 @@
     </b>
 
     <div class="ui relaxed divided list">
-
         {% for room in chat_rooms %}
-            <div class="item">
-                <a class=" chat-room" data-uid="{{ room.uid }}"
-                   style="display: inline;padding-right: 20px;">{{ room.name }}</a>
-                <span>
-                {% get_chat_users room=room %}
-                    <i class="plus icon"></i>
-                    <div>
-                    {{ room.users.count|bignum }} people
-                    </div>
-                </span>
+
+            {% chat_room_detail room=room %}
 
 
-            </div>
         {% endfor %}
-
+    <div id="room-insert"></div>
     </div>
-
 
     <div class="ui action fluid input">
         <input class="ui input" id="room-name-input" type="text" placeholder="Create a chat room."/><br/>
@@ -44,6 +33,38 @@
 
     document.querySelector('#room-name-submit').onclick = function (e) {
         var roomName = document.querySelector('#room-name-input').value;
-        window.location.pathname = '/chat/room/' + roomName + '/';
+        let list_container = $('#room-insert');
+        let view_container = $('#chat-insert');
+
+        $.ajax('/chat/ajax/create/room/', {
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                'room': roomName
+            },
+            success: function (data) {
+                if (data.status === 'error') {
+                    //alert(data.msg);
+                    popup_message(list_container, data.msg, 'error', 1000)
+                } else {
+                    //alert(data.html);
+                    //alert(container.html());
+                    list_container.before(data.list_html);
+                    view_container.html(data.view_html);
+                    $('#chat-log').animate({scrollTop: $('#chat-log').prop("scrollHeight")}, 500)
+                    //$('#chat-log').scroll()//$('#chat-log').height();
+                    //let obj = document.getElementById("#chat-log");
+                    //obj.scrollTop = obj.scrollHeight - obj.clientHeight;
+                }
+
+            },
+            error: function (xhr, status, text) {
+                error_message($(this), xhr, status, text)
+            }
+        });
+
+        //window.location.pathname = '/ajax/create/room/';
+
+
     };
 </script>
