@@ -90,7 +90,7 @@ def ajax_room_view(request, room_uid):
         messages = []
 
     tmpl = loader.get_template("chat/room_view.html")
-    context = dict(messages=messages, room_name_json=mark_safe(room_uid))
+    context = dict(messages=messages, room=room, room_name_json=mark_safe(room_uid))
 
     messages_html = tmpl.render(context)
 

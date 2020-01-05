@@ -481,9 +481,10 @@ def default_feed(user):
         chat_rooms = user.chatroom_set.all()
     else:
         chat_rooms = None
+
     context = dict(recent_votes=recent_votes, recent_awards=recent_awards,
                    recent_locations=recent_locations, recent_replies=recent_replies,
-                   user=user, chat_rooms=chat_rooms)
+                   user=user, chat_rooms=chat_rooms, enable=settings.ENABLE_CHAT)
     return context
 
 

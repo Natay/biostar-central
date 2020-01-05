@@ -45,8 +45,7 @@ function room_view(uid) {
 
     let container = $('#chat-insert');
 
-
-    $.ajax('/chat/room/' + uid + '/',{
+    $.ajax('/chat/ajax/' + uid + '/',{
         type: 'GET',
             dataType: 'json',
             data: {
@@ -56,8 +55,11 @@ function room_view(uid) {
             if (data.status === 'error'){
 
             }else{
-                alert(container.html());
-                container.html(data.html)
+                //alert(container.html());
+                container.html(data.html);
+                container.scrollTop = container.scrollHeight;
+                let obj = document.getElementById("#chat-insert");
+                obj.scrollTop = obj.scrollHeight;
             }
 
             },

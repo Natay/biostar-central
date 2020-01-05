@@ -1,7 +1,7 @@
 {% load forum_tags %}
 {% load accounts_tags %}
 
-{% if chat_rooms %}
+{% if enable %}
 {% include 'chat/room_list.html' with chat_rooms=chat_rooms %}
 {% endif %}
 

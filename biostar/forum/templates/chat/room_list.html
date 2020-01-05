@@ -1,6 +1,8 @@
+{% load forum_tags %}
+
 <div class="ui segment">
     <div class="ui header">
-        Chat Rooms
+        Chat
     </div>
 
     <div class="ui relaxed divided list">
@@ -8,7 +10,19 @@
         {% for room in chat_rooms %}
             <div class="item">
                 <div class="content">
-                    <a class="header chat-room" data-uid="{{ room.uid }}">{{ room.name }}</a>
+                    <a href="{% url "user_profile"  room.creator.profile.uid %}">
+
+                            <div class="ui avatar image">
+                                <img class="ui tiny centered image thread-users"
+                                     src="{% gravatar user=room.creator size=80 %}">
+                            </div>
+
+                    </a>
+
+                    <a class=" chat-room" style="display: contents !important;" data-uid="{{ room.uid }}"  >{{ room.name }}</a>
+                     <div>
+                        {{ room.creator.profile.name|truncatechars:50 }}
+                    </div>
                     <div class="description">{{ room.users.all.count }}</div>
                 </div>
             </div>

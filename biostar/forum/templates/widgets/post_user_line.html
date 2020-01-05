@@ -23,7 +23,7 @@
 
     {{ post.lastedit_date|time_ago }}
 
-    <a class="trigger-highlight"  href="{% url "user_profile"  post.lastedit_user.profile.uid %}">
+    <a  href="{% url "user_profile"  post.lastedit_user.profile.uid %}">
 
         {% if avatar %}
             <div class="ui avatar image">

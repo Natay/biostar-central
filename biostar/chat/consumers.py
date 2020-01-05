@@ -1,14 +1,26 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
+from biostar.chat.models import ChatRoom, ChatMessage
 from django.conf import settings
 
 
 class SyncChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
 
+        # Check to see if this is a chat this user can see.
+        user = self.scope['user']
+
+        # Check to see if this users is is included in this chat
+        chat_room = user.chatroom_set.filter(uid=self.room_name)
+
+        # Disconnect if it does not.
+        if not chat_room.exists():
+            self.disconnect(404)
+            return
+
+        self.room_group_name = 'chat_%s' % self.room_name
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -37,6 +49,10 @@ class SyncChatConsumer(WebsocketConsumer):
                 'message': message
             }
         )
+
+        user = self.scope['user']
+
+        print(text_data, user)
 
     # Receive message from room group
     def chat_message(self, event):

@@ -22,11 +22,16 @@ def init_chat(sender, **kwargs):
     uid = 'intro'
     # Create the chat room if it does not exist.
     room = ChatRoom.objects.filter(uid=uid).first()
+
     if room:
+        if settings.DEBUG:
+            ChatRoom.objects.filter(uid=uid).delete()
         return
-    room = ChatRoom.objects.create(name="Hello from biostars!", uid=uid)
+
+    room = ChatRoom.objects.create(name="Hello from biostars!", uid=uid, creator=user)
     # Create the chat message
     ChatMessage.objects.create(content="Hello! Welcome to the biostar chat. Feel free to interact.",
-                               user=user, room=room)
+                               author=user, room=room)
     # Add all users to this room (for now)
     room.users.add(*User.objects.all())
+    room.save()
