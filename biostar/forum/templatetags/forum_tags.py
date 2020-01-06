@@ -136,15 +136,15 @@ def pages_search(context, results):
 
     return context
 
-
-def now():
+@register.simple_tag
+def now(*args):
     return datetime.datetime.utcnow().replace(tzinfo=utc)
 
 
 @register.simple_tag
 def gravatar(user, size=80):
 
-    return  auth.gravatar(user=user, size=size)
+    return auth.gravatar(user=user, size=size)
 
 @register.simple_tag()
 def user_score(user):
@@ -505,11 +505,6 @@ def render_message(message_text, user):
     context = dict(author=user, creation_date=util.now(), html=html)
     return context
 
-
-@register.simple_tag
-def now():
-
-    return util.now()
 
 
 @register.inclusion_tag('chat/chat_room_detail.html')

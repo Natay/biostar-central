@@ -47,7 +47,8 @@ class SyncChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-
+        content = message.split('|/')[0]
+        user = self.scope['user']
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
@@ -56,13 +57,18 @@ class SyncChatConsumer(WebsocketConsumer):
                 'message': message
             }
         )
-
-        user = self.scope['user']
-
+        # Send message to room group
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'chat_user',
+        #         'user': user
+        #     }
+        # )
         # Get the current chat room
         room = ChatRoom.objects.filter(uid=self.room_name).first()
 
-        msg = ChatMessage.objects.create(content=message, author=user, room=room)
+        ChatMessage.objects.create(content=content, author=user, room=room)
         # Create the message
 
         #print(text_data, user, self.room_name, msg)
@@ -76,6 +82,14 @@ class SyncChatConsumer(WebsocketConsumer):
             'message': message
         }))
 
+    # Receive message from room group
+    # def chat_user(self, event):
+    #     user = self.scope['user']#event['message']
+    #
+    #     # Send message to WebSocket
+    #     self.send(text_data=json.dumps({
+    #         'user': user
+    #     }))
 
 class AsyncChatConsumer(AsyncWebsocketConsumer):
 

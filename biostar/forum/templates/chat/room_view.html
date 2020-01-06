@@ -16,12 +16,14 @@
     </div>
 
     <div class="ui action input">
-        <input id="chat-message-input" style="width: 10%;" type="text" size="100"/>
+        <input id="chat-message-input" style="width: 10%;" type="text" size="100" data-username="{{ user.profile.name }}"/>
         <button id="chat-message-submit" type="button" value="Send" class="ui button">Send</button>
     </div>
 </div>
 
-
+{% gravatar user=user size=80 as gravatar_src %}
+{% url "user_profile"  user.profile.uid as user_src %}
+{% now '' as creation_date %}
 <script>
     var roomName = "{{ room_name_json }}";
 
@@ -31,10 +33,46 @@
 
     chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);
+        console.log(e.data, e.data.type);
         var message = data['message'];
         //let value = $('#chat-log').val();
         //let new_message = message + '<br>';
-        $('#chat-log').append(message);
+        var msg = message.split('|/')[0];
+        var user_info = message.split('|/')[1].split(',');
+        var username = user_info[0].substring(0, 30);
+        var message_user_url = user_info[1];
+        var message_gravatar_url = user_info[2];
+        //console.log(message, message_gravatar_url, message_user_url);
+
+        $('#chat-log').append('<div class="chat-msg">\n' +
+            '\n' +
+            '    <div class="chat-container">\n' +
+            '        <a href="{{ user_url }}">\n' +
+            '\n' +
+            '            <div class="ui avatar image">\n' +
+            '                <img class="ui centered image thread-users"\n' +
+            '                     src='+ message_gravatar_url +'>\n' +
+            '            </div>\n' +
+            '\n' +
+            '        </a>\n' +
+            '        <a href='+ message_user_url + '>\n' +
+            '            <b>\n' + username + '\n' +
+            '            </b>\n' +
+            '        </a>\n' +
+            '        <span class="muted">{{ creation_date|timesince|truncatechars:12 }} ago</span>\n' +
+            '\n' +
+            '        <div style="padding-top: 2px;padding-bottom: 2px; margin-left: 33px">\n' +
+             msg + '\n' +
+            '        </div>\n' +
+            '    </div>\n' +
+            '\n' +
+            '</div>');
+
+
+
+        //console.log(message, "MSG");
+
+
 
         $('#chat-log').animate({scrollTop: $('#chat-log').prop("scrollHeight")}, 500)
         //let obj = document.getElementById("#chat-log");
@@ -56,10 +94,13 @@
     document.querySelector('#chat-message-submit').onclick = function (e) {
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
+        var username = $('#chat-message-input').data('username');
+        var user_url = "{{ user_src }}";
+        var gravatar_url = "{{ gravatar_src }}";
 
+        chatSocket.send(JSON.stringify({
+            'message': message + "|/"+ username + "," + user_url + "," + gravatar_url,
+        }));
         messageInputDom.value = '';
     };
 </script>

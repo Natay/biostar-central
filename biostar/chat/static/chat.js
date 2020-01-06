@@ -56,6 +56,8 @@ function room_view(uid) {
 
             } else {
                 //alert(container.html());
+                //if (chatSocket.readyState === WebSocket.OPEN) {
+                //}
                 container.html(data.html);
                 $('#chat-log').animate({scrollTop: $('#chat-log').prop("scrollHeight")}, 500)
                 //$('#chat-log').scroll()//$('#chat-log').height();
@@ -75,9 +77,13 @@ function room_view(uid) {
 
 $(document).ready(function () {
     $(this).on('click', '.chat-room', function (event) {
+
         event.preventDefault();
+
         let uid = $(this).data('uid');
-        room_view(uid)
+
+        room_view(uid);
+
 
     });
 });
