@@ -21,7 +21,6 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 
-from biostar.chat.models import ChatRoom
 from biostar.utils.markdown import parse
 from biostar.accounts.models import Profile, Message
 from biostar.forum import const, auth, util

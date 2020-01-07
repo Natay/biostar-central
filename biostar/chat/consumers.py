@@ -17,15 +17,15 @@ class SyncChatConsumer(WebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
 
         # Check to see if this is a chat this user can see.
-        user = self.scope['user']
+        #user = self.scope['user']
 
         # Check to see if this users is is included in this chat
-        chat_room = user.chatroom_set.filter(uid=self.room_name)
+        #chat_room = user.chatroom_set.filter(uid=self.room_name)
 
         # Disconnect if it does not.
-        if not chat_room.exists():
-            self.disconnect(404)
-            return
+        #if not chat_room.exists():
+        #    self.disconnect(404)
+        #    return
 
         self.room_group_name = 'chat_%s' % self.room_name
         # Join room group
@@ -66,9 +66,9 @@ class SyncChatConsumer(WebsocketConsumer):
         #     }
         # )
         # Get the current chat room
-        room = ChatRoom.objects.filter(uid=self.room_name).first()
-
-        ChatMessage.objects.create(content=content, author=user, room=room)
+        #try:
+        #room = ChatRoom.objects.filter(uid=self.room_name).first()
+        #ChatMessage.objects.create(content=content, author=user, room=room)
         # Create the message
 
         #print(text_data, user, self.room_name, msg)
