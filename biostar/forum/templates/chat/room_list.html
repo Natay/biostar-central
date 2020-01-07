@@ -6,7 +6,7 @@
 {% endblock %}
 
 
-{% block body %}
+{% block content %}
 
 <div class="ui segment">
     <b>
@@ -29,13 +29,15 @@
 
 </div>
 
-{% endblock %}
+
+<div id="chat-insert"></div>
 
 <script>
     document.querySelector('#room-name-input').focus();
     document.querySelector('#room-name-input').onkeyup = function (e) {
         if (e.keyCode === 13) {  // enter, return
             document.querySelector('#room-name-submit').click();
+            alert("HHH");
         }
     };
 
@@ -76,3 +78,4 @@
 
     };
 </script>
+{% endblock %}
