@@ -1,5 +1,13 @@
+{% extends "forum_list.html" %}
 {% load forum_tags %}
 {% load humanize %}
+{% block headtitle %}
+    Biostar Chat
+{% endblock %}
+
+
+{% block body %}
+
 <div class="ui segment">
     <b>
         Biostars Chat
@@ -10,7 +18,6 @@
 
             {% chat_room_detail room=room %}
 
-
         {% endfor %}
     <div id="room-insert"></div>
     </div>
@@ -20,8 +27,9 @@
         <button id="room-name-submit" type="button" value="Enter">Create</button>
     </div>
 
-
 </div>
+
+{% endblock %}
 
 <script>
     document.querySelector('#room-name-input').focus();
