@@ -1,7 +1,8 @@
 {% load forum_tags %}
 
 <div class="item">
-    <a class=" chat-room" data-uid="{{ room.uid }}"
+
+    <a href="{% url 'ajax_room_list' %}?room_uid={{ room.uid }}" data-uid="{{ room.uid }}"
        style="display: inline;padding-right: 20px;">{{ room.name }}</a>
 
     <span style="float: right">

@@ -19,7 +19,7 @@ def init_chat(sender, **kwargs):
     from biostar.chat.models import ChatRoom, ChatMessage
     User = get_user_model()
     user = User.objects.filter(is_superuser=True).first()
-    uid = 'intro'
+    uid = settings.INIT_CHAT
     # Create the chat room if it does not exist.
     room = ChatRoom.objects.filter(uid=uid).first()
 

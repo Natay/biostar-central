@@ -15,6 +15,8 @@ CHAT_APP = [
     'channels'
 ]
 
+# First chat room
+INIT_CHAT = 'intro'
 
 ASGI_APPLICATION = 'biostar.chat.routing.application'
 

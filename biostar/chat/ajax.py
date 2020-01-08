@@ -90,6 +90,7 @@ def ajax_room_list(request):
 
     # Render the template
     tmpl = loader.get_template("chat/room_list.html")
+    #print(chat_rooms)
     context = dict(chat_rooms=chat_rooms)
 
     rooms_html = tmpl.render(context)
