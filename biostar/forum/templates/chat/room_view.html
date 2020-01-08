@@ -1,10 +1,8 @@
 {% load humanize %}
 {% load forum_tags %}
 
-<div class="ui segment" style="background-color: #f6f6f6">
 
     <b>{{ room.name }}
-        <a style="float: right"><i class="user plus icon"></i>ADD</a>
     </b>
 
     <div id="chat-log" class="ui blue segment" style="width: 100%; height: 300px; overflow-y: auto;background-color: #fcfcfc;">
@@ -19,7 +17,7 @@
         <input id="chat-message-input" style="width: 10%;" type="text" size="100" data-username="{{ user.profile.name }}"/>
         <button id="chat-message-submit" type="button" value="Send" class="ui button">Send</button>
     </div>
-</div>
+
 
 {% gravatar user=user size=80 as gravatar_src %}
 {% url "user_profile"  user.profile.uid as user_src %}

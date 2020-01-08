@@ -5,13 +5,10 @@
     Biostar Chat
 {% endblock %}
 
-
 {% block content %}
+<div class="ui horizontal segments">
 
 <div class="ui segment">
-    <b>
-        Biostars Chat
-    </b>
 
     <div class="ui relaxed divided list">
         {% for room in chat_rooms %}
@@ -30,7 +27,25 @@
 </div>
 
 
-<div id="chat-insert"></div>
+    <div class="ui segment" id="chat-insert" style="background-color: #f6f6f6;">
+    <b>{{ room.name }}</b>
+
+    <div id="chat-log" class="ui blue segment" style="width: 100%; height: 300px; overflow-y: auto;background-color: #fcfcfc;">
+
+        {% for message in messages %}
+            {% chat_message message=message %}
+        {% endfor %}
+
+    </div>
+
+    <div class="ui action input">
+        <input id="chat-message-input" style="width: 100%;" type="text" size="100" data-username="{{ user.profile.name }}"/>
+        <button id="chat-message-submit" type="button" value="Send" class="ui button">Send</button>
+    </div>
+</div>
+
+
+</div>
 
 <script>
     document.querySelector('#room-name-input').focus();
@@ -79,3 +94,4 @@
     };
 </script>
 {% endblock %}
+
