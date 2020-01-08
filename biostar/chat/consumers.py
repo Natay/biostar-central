@@ -6,16 +6,32 @@ from asgiref.sync import async_to_sync, sync_to_async
 from biostar.chat.models import ChatRoom, ChatMessage
 from django.conf import settings
 from django.utils.timezone import utc
-
+import logging
 
 def now():
     return datetime.utcnow().replace(tzinfo=utc)
 
 
+class DebugConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+
+    def disconnect(self, close_code):
+        pass
+
+    def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+
+        self.send(text_data=json.dumps({
+            'message': message
+        }))
+
+
 class SyncChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-
+        #self.message.reply_channel.send({"accept": True})
         # Check to see if this is a chat this user can see.
         #user = self.scope['user']
 
@@ -26,7 +42,8 @@ class SyncChatConsumer(WebsocketConsumer):
         #if not chat_room.exists():
         #    self.disconnect(404)
         #    return
-
+        #1/0
+        #print("FOOO")
         self.room_group_name = 'chat_%s' % self.room_name
         # Join room group
         async_to_sync(self.channel_layer.group_add)(

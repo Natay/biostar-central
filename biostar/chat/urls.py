@@ -13,5 +13,6 @@ urlpatterns = [
 ]
 
 websocket_urlpatterns = [
-    re_path(r'ws/chat/(?P<room_name>[-\w]+)/$', consumers.SyncChatConsumer),
+    re_path(r'ws/chat/(?P<room_name>[-\w]+)/$', consumers.DebugConsumer),
+    #re_path(r'foo/(?P<room_name>[-\w]+)/$', consumers.SyncChatConsumer),
 ]

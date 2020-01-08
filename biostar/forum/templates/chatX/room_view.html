@@ -23,7 +23,7 @@
 {% url "user_profile"  user.profile.uid as user_src %}
 {% now '' as creation_date %}
 <script>
-    var roomName = "{{ room_name_json }}";
+    var roomName = "{{ room_name_json|escapejs }}";
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +

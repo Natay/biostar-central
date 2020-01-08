@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from biostar.chat.models import ChatRoom
+import channels
 import json
 
 
@@ -27,6 +28,7 @@ def room(request, room_name):
     if user.is_anonymous:
         return redirect(reverse('login'))
 
+    print(channels.__version__)
     # Filter for the chat rooms this user is in.
     context = dict(room_name_json=mark_safe(json.dumps(room_name)), )
     return render(request, 'chat/room_view.html', context)

@@ -96,6 +96,7 @@ ALLOWED_POST_TYPES = []
 if DEBUG_TOOLBAR:
     FORUM_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    #1/0
 
 
 # Import the default pagedown css first, then our custom CSS sheet
