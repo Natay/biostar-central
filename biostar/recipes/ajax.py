@@ -256,6 +256,25 @@ def manage_access(request):
     return ajax_success("Changed access.", no_access=no_access)
 
 
+def project_listing(request):
+
+    if target == 'private' and request.user.is_authenticated:
+        active = "private"
+        projects = auth.get_project_list(user=request.user, include_public=False)
+    else:
+        projects = auth.get_project_list(user=request.user)
+        projects = projects.exclude(privacy__in=[Project.PRIVATE, Project.SHAREABLE])
+        active = "public"
+
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+    tmpl = loader.get_template("project_list.html")
+
+    context = dict(projects=projects, active=active)
+    template = tmpl.render(context=context)
+
+    return render(request, "project_list.html", context=context)
+
+
 @ajax_error_wrapper(method="POST", login_required=True)
 def copy_file(request):
     """

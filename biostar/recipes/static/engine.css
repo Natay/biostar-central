@@ -38,7 +38,9 @@ pre.toml_code {
     border-radius: .28571429rem;
 }
 
-
+.ui.menu.rec-search .item:before{
+    width:0 ;
+}
 .data .content, .job .content, .recipe.content{
         width: 0;
 }
@@ -47,6 +49,16 @@ pre.toml_code {
     margin-right: 15%;
 }
 
+
+
+#tools {
+
+    display: none;
+}
+
+.tools .item{
+    padding-left: 35px !important;
+}
 .show.item.visible.transition {
     display: inline;
 }

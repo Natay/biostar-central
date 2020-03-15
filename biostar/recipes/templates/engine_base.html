@@ -46,7 +46,7 @@
 <body>
 
 <div id="top"></div>
-<div class="ui container">
+<div class="ui basic segment">
 
     <div class="ui center aligned header">
         {% block title %}
@@ -58,33 +58,86 @@
         {% menubar request=request %}
     {% endblock %}
 
+  <div class="ui bottom pushable attached segment" style="width: 100%;height: auto">
 
-    <div class="ui bottom attached segment">
+   <div class="ui visible left vertical sidebar recipes menu"
+        style="box-shadow: none;border-top: none;border-bottom:none;border-left: none;">
 
-        <div id="search-results"></div>
+        <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
+            <i class="home icon"></i>Home
+        </a>
+        {% if user.is_superuser %}
+             <a class="ui admin item">
+                 <i class="dashboard icon"></i> Tools
+             </a>
+   {% endif %}
+        <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
+            <i class=" settings icon"></i>Latest Recipes
+        </a>
 
-        {% block body %}
-            {# Main body #}
-            BODY
-            {% block content %}
+        <a class="ui public {% activate active "public" %}  item" href="{% url 'project_list_public' %}">
+            <i class=" list icon"></i>Public Projects
+        </a>
 
-            {% endblock %}
-        {% endblock %}
-    </div>
+       <span id="public"> </span>
 
+        {% if user.is_authenticated %}
+            <a class="ui {% activate active "private" %}  item" href="{% url 'project_list_private' %}">
+                <i class=" briefcase icon"></i>Private Projects
+            </a>
+        {% endif %}
 
-</div>
+        {% if user.is_superuser %}
+    
+            <span id="tools">
+                <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
+                    <i class="download  icon"></i>Import
+                </a>
+                <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+                     <i class="dashboard icon"></i>Django Admin
+                </a>
 
-    {% block footer %}
-        <div class="ui basic center aligned segment">
-            <p class="muted smaller">
-                Powered by the <a href="https://github.com/ialbert/biostar-central" class="ui image">
-                <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
-            </p>
+                <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+                     <i class="dashboard icon"></i>Recipes Admin
+                </a>
+            </span>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <a class="ui item" href="{% url 'project_create' %}">
+                <i class="plus icon"></i>New Project
+            </a>
+        {% endif %}
 
         </div>
-    {% endblock %}
 
+        <div class="pusher" style="width: 80%;">
+
+            <div id="search-results"></div>
+
+            {% block body %}
+                {# Main body #}
+                BODY
+                {% block content %}
+
+                {% endblock %}
+            {% endblock %}
+
+
+    </div>
+
+  </div>
+</div>
+
+{% block footer %}
+    <div class="ui basic center aligned segment">
+        <p class="muted smaller">
+            Powered by the <a href="https://github.com/ialbert/biostar-central" class="ui image">
+            <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
+        </p>
+
+    </div>
+{% endblock %}
 
 
 </body>

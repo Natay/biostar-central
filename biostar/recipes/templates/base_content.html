@@ -8,6 +8,7 @@
 
 
 {% block body %}
+
     <input type="hidden" id="project_id" value="{{ project.id }}">
 
     <div class="ui center aligned basic vertical segment">
@@ -16,19 +17,8 @@
         </div>
     </div>
 
-    <a class="ui left ribbon projects label" href="{% url 'project_list' %}">
-        <i class="database icon"></i> All Projects
-    </a>
-
     <span id="clipboard"></span>
 
-    {% block ribbon %}
-        {% if user.is_authenticated %}
-            <a class="ui right ribbon obj label" href="{% url 'recipe_create' project.uid %}">
-                <i class="plus icon"></i>New Recipe
-            </a>
-        {% endif %}
-    {% endblock %}
 
     <div class="ui basic segment" >
 
@@ -62,7 +52,6 @@
 
     {% block contain %}
         <div class="ui bottom attached large segment">
-
             {% show_messages messages %}
             {% block content %}
                 Content

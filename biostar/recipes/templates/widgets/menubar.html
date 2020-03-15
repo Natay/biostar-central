@@ -1,20 +1,15 @@
 {% load engine_tags %}
 
-<div class="ui large top attached menu">
+<div class="ui large top attached menu ">
 
-    <a class="{% activate "home" active %} item widescreen" href="/">
-        <i class="home icon"></i>
-    </a>
-
-    <div class="ui category search fluid item">
+    <div class="ui category search rec-search fluid item" style="width: 70.6%;">
         <div class="ui transparent icon input">
-            <input class="prompt" id="recipe-search" type="text"
-                   placeholder="Search recipes...">
+            <input class="prompt" id="recipe-search" type="text" placeholder="Search recipes...">
             <i class="search link icon"></i>
         </div>
     </div>
 
-    <div class="right menu">
+    <div class="right menu" style="border-bottom: none;">
         <a class="item widescreen" href="https://bioinformatics-recipes.readthedocs.io/">
             <i class="question circle icon"></i> About
         </a>

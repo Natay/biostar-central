@@ -192,7 +192,6 @@ function update_panels() {
         var node = $('#{0}'.format(name));
         var url = server.format(name, id);
         node.load(url, function (response, status, xhr) {
-
         });
     }
 
