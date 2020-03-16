@@ -64,6 +64,7 @@
 
 
         {% if project %}
+            <div class="item" ></div>
             <div class="item" style="background-color: #dfdfdf;"><div class="ui small header"> {{ project.name|truncatechars:30 }}</div></div>
         <a class="{% activate 'info' active %}  item" href="{% url 'project_viewing' project.label %}">
             <i class="info circle icon"></i><span class="phone">Information </span>
@@ -86,14 +87,10 @@
                 <i class="angle double down icon"></i> <span class="tablet">{{ activate }}</span>
             </div>
         {% endif %}
-<div class="item" style="background-color: #c5c1c4;"></div>
+<div class="item" ></div>
         {% endif %}
 
 
-
-       <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
-            <i class="home icon"></i><span class="ui small header">Home</span>
-        </a>
         <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
             <span class="ui small header">Latest Recipes</span><i class=" settings icon"></i>
 
@@ -127,7 +124,6 @@
         <div class="pusher" style="width: 80%;">
 
             <div id="search-results"></div>
-            {% show_messages messages %}
             {% block body %}
                 {# Main body #}
                 BODY
