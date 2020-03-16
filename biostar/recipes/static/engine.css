@@ -42,7 +42,7 @@ pre.toml_code {
     width:0 ;
 }
 .data .content, .job .content, .recipe.content{
-        width: 0;
+    width: auto;
 }
 .narrow {
     margin-left: 15%;
