@@ -6,11 +6,6 @@
     Base listing
 {% endblock %}
 
-<div class="ui large header">
-    {% block title %}
-        Listing
-    {% endblock %}
-</div>
 
 {% block body %}
 
@@ -49,6 +44,11 @@
     </div>{% endcomment %}
 
 <div class="ui bottom basic large segment">
+
+    {% block title %}
+        Listing
+    {% endblock %}
+
 
         {% block content %}
 

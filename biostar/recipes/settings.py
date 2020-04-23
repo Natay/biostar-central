@@ -1,3 +1,4 @@
+import sys
 from biostar.accounts.settings import *
 from biostar.emailer.settings import *
 
@@ -122,17 +123,10 @@ try:
     from conf.run.secrets import *
     print(f"Loaded secrets from: conf.run.secrets")
 except Exception as exc:
-    print(f"Secrets module not imported: {exc}")
+    print(f"Secrets module not imported: {exc}", file=sys.stderr)
 
 
 # Enable debug toolbar specific functions
-if DEBUG_TOOLBAR and 'debug_toolbar' not in INSTALLED_APPS:
-    INSTALLED_APPS.extend([
-        'debug_toolbar',
-    ])
+if DEBUG and DEBUG_TOOLBAR and 'debug_toolbar' not in INSTALLED_APPS:
+    INSTALLED_APPS.extend(['debug_toolbar'])
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
-
-# Add static serving capability
-if DEBUG is False:
-    print("Whitenoise static serve enabled (pip install whitenoise)")
-    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')

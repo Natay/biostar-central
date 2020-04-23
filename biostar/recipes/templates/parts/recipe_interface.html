@@ -22,8 +22,12 @@
                 <i class="save icon"></i> Save Interface
             </button>
 
-            <a class="ui right floated gray button click" data-value="#info">
-                <i class="arrow left icon"></i> Back
+            <a class="ui gray button" href="{% url 'recipe_download' recipe.uid %}">
+                <i class="download icon"></i> Download
+            </a>
+
+            <a class="ui gray button click" data-value="#info">
+                 <i class="redo icon"></i>Cancel
             </a>
         </div>
 
@@ -206,6 +210,7 @@
                     label = "Pick data"
                     source = "PROJECT"
                     help = "Pick data from this project."
+                    choices = [ ["A","Default"] ]
                     </pre>
                 </div>
 
@@ -250,8 +255,6 @@
         var textarea = $('#interface_editor');
         var editor = init_codemirror(textarea, 400);
 
-        update_preview();
-
         $(".card").each(function (index) {
             var curr = $(this);
             var toml = curr.find(".toml_code").text();
@@ -279,6 +282,7 @@
 
             // Add clicked field html to preview;
             $("#preview form .preview").append(field.html());
+            $('.ui.dropdown').dropdown();
 
             popup_message($(this), 'Inserted into interface.', "success");
         });

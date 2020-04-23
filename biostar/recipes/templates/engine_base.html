@@ -43,21 +43,107 @@
     {% endblock %}
 
 </head>
-<body>
+<body style="padding-top: 0;">
 
 <div id="top"></div>
-<div class="ui basic segment">
 
-    <div class="ui center aligned header">
-        {% block title %}
-            {% include 'site_header.html' %}
-        {% endblock %}
+
+
+    {% block title %}
+        {% include 'site_header.html' %}
+    {% endblock %}
+
+<div class="ui grid" >
+    <div class="three wide column" style="padding-top: 15px;padding-left: 30px;background-color: #f4f1f1;
+    padding-right: 0;">
+
+            <div class="ui vertical large text menu" style="width: initial;">
+
+
+
+                {% if project %}
+
+
+                        <div class="item"> {{ project.name }}</div>
+
+<div class="ui divider"></div>
+                        <a class="{% activate 'info' active %}  item" href="{% url 'project_viewing' project.label %}">
+                            <i class="info circle icon"></i><span class="phone">Information </span>
+                        </a>
+
+                        <a class="{% activate 'data' active %}  item" href="{% url 'data_listing' project.label %}"
+                        style="display: inline-block">
+                            <i class="file text icon"></i><span id="data_count">{{ data_count }}</span>&nbsp;<span
+                                class="phone"> Data</span>
+                        </a>
+                <a class="ui green label" href="{% url 'data_upload' project.uid %}" style="margin-left: 39px">
+                    <i class="plus icon"></i>Upload</a>
+                        <a class="{% activate 'recipes' active %}  item"
+                           href="{% url 'recipe_listing' project.label %}" style="display: inline-block">
+                            <i class="settings icon"></i> {{ recipe_count }}&nbsp;<span class="phone"> Recipes</span>
+                        </a>
+
+            <a class="ui green label" href="{% url 'recipe_create' project.uid  %}" style="margin-left: 19px">
+                    <i class="plus icon"></i>Create</a>
+
+                        <a class="{% activate 'jobs' active %} item" href="{% url 'job_listing' project.label %}">
+                            <i class="bar chart icon"></i><span id="job_count">{{ result_count }}</span><span
+                                class="phone">&nbsp;Results</span>
+                        </a>
+
+                        {% if 0 %}
+                            <div class="active item" id="job_item">
+                                <i class="angle double down icon"></i> <span class="tablet">{{ activate }}</span>
+                            </div>
+                        {% endif %}
+
+            <div class="ui divider"></div>
+            {% endif %}
+
+
+
+                        <a class="ui public {% activate active "public" %}  item" href="{% url 'project_list_public' %}">
+                <i class=" list icon"></i>Public Projects
+            </a>
+
+            <a class="ui {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
+                <i class=" settings icon"></i>Latest Recipes
+            </a>
+                     {% if user.is_authenticated %}
+
+                <a class="ui {% activate active "private" %}  item" href="{% url 'project_list_private' %}">
+                    <i class=" briefcase icon"></i>Private Projects
+                </a>
+   <a class="ui item" href="{% url 'project_create' %}" style="color: green">
+                    <i class="plus icon"></i>Create Project
+                </a>
+                                   <div class="ui divider"></div>
+                   <a class="{% activate "bin" active %} item" href="{% url 'recycle_bin' %}">
+                <i class="trash icon"></i> Recycle Bin
+            </a>
+            {% endif %}
+
+
+
+
+
+            {% if user.is_superuser %}
+
+                <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+                    <i class="dashboard icon"></i>Site Admin
+                </a>
+
+                <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
+                    <i class="download  icon"></i>Import
+                </a>
+
+            {% endif %}
+                  <a class="item widescreen" href="https://bioinformatics-recipes.readthedocs.io/">
+            <i class="question circle icon"></i> About
+        </a>
+            </div>
     </div>
-
-
-
-    <div class="ui bottom pushable attached segment" style="width: 100%; min-height: 800px;height: auto;">
-
+    {% comment %}
         <div class="ui visible left vertical inverted sidebar recipes menu"
              style="box-shadow: none;border-top: none;border-bottom:none;border-left: none;">
 
@@ -119,26 +205,27 @@
                 </a>
 
             {% endif %}
-        </div>
-
-        <div class="pusher" style="width: 80%;">
+        </div>{% endcomment %}
+ <div class="thirteen wide column" style="padding-top: 15px;padding-left: 0;">
+    <div class="ui  segment" style="padding: 0px;    height: 103%;">
     {% block menu %}
-        {% menubar request=request %}
-    {% endblock %}
-            <div id="search-results"></div>
-            {% block body %}
-                {# Main body #}
-                BODY
-                {% block content %}
+            {% menubar request=request %}
+        {% endblock %}
+
+        <div id="search-results"></div>
+        {% block body %}
+            {# Main body #}
+            BODY
+            {% block content %}
 
 
-                {% endblock %}
             {% endblock %}
+        {% endblock %}
 
-
-        </div>
 
     </div>
+ </div>
+
 </div>
 
 {% block footer %}

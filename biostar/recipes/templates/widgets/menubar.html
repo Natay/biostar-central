@@ -15,9 +15,7 @@
     </div>
 
     <div class="right menu">
-        <a class="item widescreen" href="https://bioinformatics-recipes.readthedocs.io/">
-            <i class="question circle icon"></i> About
-        </a>
+
 
         {% if user.is_authenticated %}
                 <a class="{% activate "profile" active %} {% if user.is_superuser %}trusted{% endif %} item"

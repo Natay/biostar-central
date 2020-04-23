@@ -7,10 +7,13 @@
 {% endblock %}
 
 {% block title %}
-    <i class="list icon"></i> Latest recipes
+
 {% endblock %}
 
 {% block content %}
+        <div class="ui center aligned header">
+        <i class="list icon"></i> Latest recipes
+    </div>
       <div class="ui divided link items">
     {% for recipe in recipes %}
         {% recipe_details recipe %}

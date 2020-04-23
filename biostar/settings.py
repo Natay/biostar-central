@@ -15,7 +15,6 @@ def join(*args):
 # Run tasks in multi threaded mode when UWSGI is not installed.
 MULTI_THREAD = True
 
-
 # Set the home page to the engine or forum
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -30,6 +29,8 @@ DEFAULT_ADMIN_PASSWORD = "admin@localhost"
 CORS_ORIGIN_WHITELIST = [
     'https://view.qiime2.org',
 ]
+
+POSTGRES_HOST = os.environ.setdefault("POSTGRES_HOST", "")
 
 # Shortcut to first admin information.
 ADMIN_NAME, ADMIN_EMAIL = ADMINS[0]
@@ -132,7 +133,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Database settings.
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+DATABASE_DIR = os.path.join(BASE_DIR, 'export', 'db')
+os.makedirs(DATABASE_DIR, exist_ok=True)
+
 DATABASE_NAME = os.environ.setdefault("DATABASE_NAME", "database.db")
+# Ensure database is inside database directory.
+DATABASE_NAME = os.path.join(DATABASE_DIR, DATABASE_NAME)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -169,7 +176,7 @@ STATIC_ROOT = join(BASE_DIR, 'export', 'static')
 
 # Global directories for static files.
 STATICFILES_DIRS = [
-    #join(BASE_DIR, "biostar", "static"),
+    join(BASE_DIR, "biostar", "static"),
 ]
 
 

@@ -25,7 +25,7 @@
 
                 <div class="content">
 
-                    <a class="subheader" href="{% url 'recipe_listing' project.label %}">
+                    <a class="subheader" href="{% url 'project_view' project.uid %}">
                         <i class="database icon"></i>{{ project.get_name }}
                     </a>
 
@@ -56,7 +56,9 @@
 
     {% if not projects %}
         <div class="item ">
-            <div class="ui warning message"><i class="ui warning circle icon"></i>There are no projects yet.</div>
+
+            <div class="ui warning message"><i class="ui warning circle icon"></i>No projects found.</div>
+
         </div>
     {% endif %}
 

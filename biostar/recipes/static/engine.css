@@ -16,6 +16,20 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+#project_view h1 {
+ font-size: 1.28571429rem;
+}
+
+
+#project_view h2 {
+ font-size: 1.18571429rem;
+}
+
+
+#project_view h3 {
+ font-size: 1.08571429rem;
+}
+
 .ui.tabular.colored.menu {
     border-bottom: 1px solid #2185d0 !important;
 
@@ -441,6 +455,9 @@ figure {
     font-weight: bold;
 }
 
+.ui.left.sidebar{
+    width: 15rem;
+}
 
 .card .content:not(.extra):hover{
     cursor: pointer;
