@@ -11,9 +11,15 @@
 
 body {
     background-color: #f8f8f9 !important;
-    padding-top: 1rem;
+    padding-top: 0rem;
     font-family: "Lato", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     text-rendering: optimizeLegibility;
+}
+
+.ui.vertical.menu .item>i.icon {
+    float: none;
+    margin-right: .5rem;
+    margin-left: 0;
 }
 
 

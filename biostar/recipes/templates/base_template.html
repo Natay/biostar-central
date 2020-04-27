@@ -45,22 +45,112 @@
 <body>
 
 
-<div class="ui container" id="top">
+<div class="ui left fixed vertical menu" style="box-shadow: none; overflow-y: auto">
+
+    {% if project %}
+        <div class="item"></div>
+        <a class="{% activate 'info' active %}  item" href="{% url 'project_view' project.uid %}">
+            <i class="info circle icon"></i>Project Info
+        </a>
+
+        <a class="{% activate 'data' active %}  item" href="{% url 'data_list' project.uid %}">
+            <i class="file text icon"></i><span id="data_count">{{ data_count }}</span>&nbsp;<span
+                class="phone"> Data</span>
+        </a>
+        <a class="{% activate 'recipes' active %}  item" href="{% url 'recipe_list' project.uid %}">
+            <i class="settings icon"></i> {{ recipe_count }}&nbsp;<span class="phone"> Recipes</span>
+        </a>
+
+        <a class="{% activate 'jobs' active %} item" href="{% url 'job_list' project.uid %}">
+            <i class="bar chart icon"></i><span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
+        </a>
+
+        {% if activate %}
+            <div class="active item" id="job_item">
+                <i class="angle double down icon"></i> <span class="tablet">{{ activate }}</span>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+    {% if recipe or analysis %}
+                <a class="item click" href="#" data-value="#info">
+
+                    <i class="info circle icon"></i> Description
+                </a>
+
+                <a class="item" href="{% url 'recipe_download' recipe.uid %}">
+                    <i class="download icon"></i> Download
+                </a>
+
+                <a class="item click" href="#" data-value="#results">
+                    <i class="settings icon"></i> Results ({{ recipe.job_count }})
+                </a>
+
+                <a class="item click" href="#" data-value="#run">
+                    <i class="setting icon"></i> Execute
+                </a>
+
+                <a class="item click" href="#" data-value="#interface">
+                    <i class="tv icon"></i> Interface
+                </a>
+
+                <a class="item click" href="#" data-value="#code">
+                    <i class="code icon"></i> Code
+
+                </a>
+{% endif %}
+
+
+    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
+        <i class="home icon"></i>Home
+    </a>
+
+
+    <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
+        <i class=" settings icon"></i>Latest Recipes
+    </a>
+
+    <a class="ui {% activate active "public" %}  item" href="{% url 'project_list_public' %}">
+        <i class=" list icon"></i>Public Projects
+    </a>
+
+    {% if user.is_authenticated %}
+
+        <span class="ui {% activate active "private" %}  item">
+            <a href="{% url 'project_list_private' %}"><i class=" briefcase icon"></i>Private Projects</a>
+            <a class="ui green circular label" href="{% url 'project_create' %}"><i class="plus icon" style="float: right"></i></a>
+        </span>
+
+
+    {% endif %}
+    {% if user.is_superuser %}
+
+        <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
+            <i class="download  icon"></i>Data Import
+        </a>
+
+        <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+            <i class="dashboard icon"></i>Site Admin
+        </a>
+
+    {% endif %}
+
+</div>
+
+<div class="ui container" id="top" style="width: 84%;
+    left: 12.5%;
+    border-left: none;
+    margin-left: 14.5% !important;">
 
     {% include 'site_header.html' %}
 
-    {% block menu %}
+{% comment %}    {% block menu %}
         {% menubar request=request %}
-    {% endblock %}
+    {% endblock %}{% endcomment %}
 
     <div class="ui bottom attached segment">
         <div id="search-results"></div>
-        <div class="ui center aligned top-title header" >
-         <span>
-            {% block title %}
-            {% endblock %}
-         </span>
-        </div>
 
         {% show_messages messages %}
         {% block body %}
