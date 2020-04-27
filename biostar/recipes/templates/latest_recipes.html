@@ -8,15 +8,22 @@
 
 {% block title %}
 
+    <i class="setting listing icon"></i> Latest recipes
 {% endblock %}
 
 {% block content %}
-        <div class="ui center aligned header">
-        <i class="list icon"></i> Latest recipes
-    </div>
-      <div class="ui divided link items">
+
+<div class="ui divided link items">
+
     {% for recipe in recipes %}
         {% recipe_details recipe %}
+
+    {% empty %}
+
+            <div class="ui warning message"><i class="ui info circle icon"></i>There are no public recipes yet.
+            </div>
+
     {% endfor %}
-      </div>
+</div>
+
 {% endblock %}
