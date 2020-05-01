@@ -330,7 +330,7 @@ def data_view(request, uid):
     project = data.project
     paths = auth.listing(root=data.get_data_dir())
     context = dict(data=data, project=project, paths=paths, serve_view="data_serve",
-                   activate='Selected Data', uid=data.uid, show_all=True)
+                   active='data', uid=data.uid, show_all=True)
     counts = get_counts(project)
     context.update(counts)
 
@@ -378,7 +378,7 @@ def data_upload(request, uid):
     # Maximum data that may be uploaded.
     maximum_size = owner.profile.max_upload_size * 1024 * 1024
 
-    context = dict(project=project, form=form, activate="Add Data",
+    context = dict(project=project, form=form, active="data",
                    maximum_size=maximum_size,
                    current_size=current_size)
 
@@ -662,7 +662,7 @@ def job_view(request, uid):
 
     paths = auth.listing(root=job.get_data_dir())
     context = dict(job=job, project=project, stderr=stderr, stdout=stdout,uid=job.uid, show_all=True,
-                   activate='View Result', paths=paths, serve_view="job_serve")
+                   active='jobs', paths=paths, serve_view="job_serve")
 
     counts = get_counts(project)
     context.update(counts)

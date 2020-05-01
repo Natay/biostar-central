@@ -43,83 +43,87 @@
 
 </head>
 <body>
+{% block menu %}
+    {% menubar request=request %}
+{% endblock %}
+<div class="ui large left fixed vertical menu" id='side'
+     style="box-shadow: none;     width: 19rem; overflow-y: auto;background-color: #ececec;top: 43px;">
 
+    {% if recipe or analysis %}
+        <div class="item" style=" background-color: #d5d1d1;">
+            <div class="muted"><b><i class="ellipsis horizontal icon"></i> RECIPE</b></div>
+        </div>
+        <a class="item click" href="#" data-value="#info">
 
-<div class="ui left fixed vertical menu" style="box-shadow: none; overflow-y: auto">
+            <i class="info circle icon"></i> Description
+        </a>
+
+        <a class="item" href="{% url 'recipe_download' recipe.uid %}">
+            <i class="download icon"></i> Download
+        </a>
+
+        <a class="item click" href="#" data-value="#results">
+            <i class="settings icon"></i> Results ({{ recipe.job_count }})
+        </a>
+
+        <a class="item click" href="#" data-value="#run">
+            <i class="setting icon"></i> Execute
+        </a>
+
+        <a class="item click" href="#" data-value="#interface">
+            <i class="tv icon"></i> Interface
+        </a>
+
+        <a class="item click" href="#" data-value="#code">
+            <i class="code icon"></i> Code
+
+        </a>
+
+    {% endif %}
 
     {% if project %}
-        <div class="item"></div>
+        <div class="item" style=" background-color: #d5d1d1;">
+            <div class="muted"><b><i class="ellipsis horizontal icon"></i> PROJECT</b></div>
+        </div>
         <a class="{% activate 'info' active %}  item" href="{% url 'project_view' project.uid %}">
             <i class="info circle icon"></i>Project Info
         </a>
+        <span class="{% activate 'data' active %}  item">
+            <a href="{% url 'data_list' project.uid %}"><i class="file text icon"></i><span
+                    id="data_count">{{ data_count }}</span>&nbsp;Data</a>
+            <a class="ui blue circular label" href="{% url 'data_upload' project.uid %}"><i class="plus icon"
+                                                                                            style="float: right; margin: 0px"></i></a>
+        </span>
+        <span class="{% activate 'recipes' active %}  item">
+            <a href="{% url 'recipe_list' project.uid %}"><i class="file text icon"></i>{{ recipe_count }}&nbsp;Recipes</a>
+            <a class="ui green circular label" href="{% url 'recipe_create' project.uid %}"><i class="plus icon"
+                                                                                               style="float: right; margin: 0px"></i></a>
+        </span>
 
-        <a class="{% activate 'data' active %}  item" href="{% url 'data_list' project.uid %}">
-            <i class="file text icon"></i><span id="data_count">{{ data_count }}</span>&nbsp;<span
-                class="phone"> Data</span>
-        </a>
-        <a class="{% activate 'recipes' active %}  item" href="{% url 'recipe_list' project.uid %}">
-            <i class="settings icon"></i> {{ recipe_count }}&nbsp;<span class="phone"> Recipes</span>
-        </a>
 
         <a class="{% activate 'jobs' active %} item" href="{% url 'job_list' project.uid %}">
             <i class="bar chart icon"></i><span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
         </a>
 
-        {% if activate %}
-            <div class="active item" id="job_item">
-                <i class="angle double down icon"></i> <span class="tablet">{{ activate }}</span>
-            </div>
-        {% endif %}
-
     {% endif %}
 
-    {% if recipe or analysis %}
-                <a class="item click" href="#" data-value="#info">
-
-                    <i class="info circle icon"></i> Description
-                </a>
-
-                <a class="item" href="{% url 'recipe_download' recipe.uid %}">
-                    <i class="download icon"></i> Download
-                </a>
-
-                <a class="item click" href="#" data-value="#results">
-                    <i class="settings icon"></i> Results ({{ recipe.job_count }})
-                </a>
-
-                <a class="item click" href="#" data-value="#run">
-                    <i class="setting icon"></i> Execute
-                </a>
-
-                <a class="item click" href="#" data-value="#interface">
-                    <i class="tv icon"></i> Interface
-                </a>
-
-                <a class="item click" href="#" data-value="#code">
-                    <i class="code icon"></i> Code
-
-                </a>
-{% endif %}
-
-
-    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
-        <i class="home icon"></i>Home
-    </a>
-
-
+    <div class="item" style=" background-color: #d5d1d1;">
+        <div class="muted"><b><i class="ellipsis horizontal icon"></i> GENERAL</b></div>
+    </div>
     <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
-        <i class=" settings icon"></i>Latest Recipes
+        <i class=" settings icon"></i> Latest Recipes
     </a>
 
     <a class="ui {% activate active "public" %}  item" href="{% url 'project_list_public' %}">
-        <i class=" list icon"></i>Public Projects
+        <i class=" list icon"></i> Public Projects
     </a>
 
     {% if user.is_authenticated %}
 
         <span class="ui {% activate active "private" %}  item">
-            <a href="{% url 'project_list_private' %}"><i class=" briefcase icon"></i>Private Projects</a>
-            <a class="ui green circular label" href="{% url 'project_create' %}"><i class="plus icon" style="float: right"></i></a>
+            <a href="{% url 'project_list_private' %}"><i class=" briefcase icon"></i> Private Projects</a>
+            <a class="ui green circular label" href="{% url 'project_create' %}"><i class="plus icon"
+                                                                                    style="float: right; margin: 0px"></i></a>
         </span>
 
 
@@ -127,46 +131,33 @@
     {% if user.is_superuser %}
 
         <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
-            <i class="download  icon"></i>Data Import
+            <i class="download  icon"></i> Data Import
         </a>
 
         <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
-            <i class="dashboard icon"></i>Site Admin
+            <i class="dashboard icon"></i> Site Admin
         </a>
 
     {% endif %}
 
+    <p class="ui item muted smaller" style="text-align: center">
+        <a href="https://github.com/ialbert/biostar-central" class="ui image">
+            <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
+    </p>
+
 </div>
 
-<div class="ui container" id="top" style="width: 84%;
-    left: 12.5%;
-    border-left: none;
-    margin-left: 14.5% !important;">
+<div class="ui container" id="top" style="margin-left: 18.0% !important; padding: 10px;margin-top: 43px;">
 
     {% include 'site_header.html' %}
 
-{% comment %}    {% block menu %}
-        {% menubar request=request %}
-    {% endblock %}{% endcomment %}
 
-    <div class="ui bottom attached segment">
-        <div id="search-results"></div>
+    <div id="search-results"></div>
 
-        {% show_messages messages %}
-        {% block body %}
-            Body
-        {% endblock %}
-
-    </div>
-
-    <div class="ui basic center aligned segment">
-        {% block footer %}
-            <p class="muted smaller">
-                Powered by the <a href="https://github.com/ialbert/biostar-central" class="ui image">
-                <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
-            </p>
-        {% endblock %}
-    </div>
+    {% show_messages messages %}
+    {% block body %}
+        Body
+    {% endblock %}
 
 </div>
 

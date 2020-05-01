@@ -12,11 +12,13 @@
 {% endblock %}
 
 {% block body %}
-       <div class="ui center aligned top-title header" >
+{% comment %}       <div class="ui center aligned top-title header" >
          <span>
-             <img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
+             <img class="ui avatar  image" src="{% img project %}"/>{{ project.name }}
          </span>
-       </div>
+       </div>{% endcomment %}
+
+
     <input type="hidden" id="project_id" value="{{ project.id }}">
 
     <span id="clipboard"></span>
@@ -24,11 +26,17 @@
     {% csrf_token %}
     {% block segment %}
 
+    <div class="ui basic large segment" style="padding-top: 0; padding-left: 37px;padding-right: 37px;">
 
-    <div class="ui basic large segment">
+     <div class="ui center aligned top-title header" >
+             <span><img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
+             </span>
+     </div>
+    <span>
         {% block content %}
             Content
         {% endblock %}
+    </span>
     </div>
 {% endblock %}
 

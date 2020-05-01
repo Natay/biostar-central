@@ -1,9 +1,10 @@
 {% load engine_tags %}
 
-<div class="ui large top attached menu">
-
-
-    <div class="ui category search fluid item">
+<div class="ui large top fixed menu" style="box-shadow: none;">
+    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
+        <i class="home icon"></i>
+    </a>
+    <div class="ui category search fluid item" >
         <div class="ui transparent icon input">
             <input class="prompt" id="recipe-search" type="text"
                    placeholder="Search recipes...">
