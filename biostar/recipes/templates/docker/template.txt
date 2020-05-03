@@ -1,0 +1,4 @@
+
+ADD recipe.sh .
+
+ENTRYPOINT ["/bin/bash", "recipe.sh"]
