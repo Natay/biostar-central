@@ -315,6 +315,7 @@ def read_tags(filepath, exclude=[], limit=500):
     stream = open(filepath, 'r') if os.path.exists(filepath) else []
     stream = islice(zip(count(1), stream), limit)
     tags_opts = set()
+
     for idx, line in stream:
         line = line.strip()
         if line in exclude:
@@ -471,7 +472,7 @@ def default_feed(user):
     recent_awards = recent_awards.order_by("-pk")[:settings.AWARDS_FEED_COUNT]
 
     # Get valid posts
-    recent_replies = Post.objects.valid_posts().filter(is_toplevel=False).select_related("author__profile", "author")
+    recent_replies = Post.objects.valid_posts(is_toplevel=False).select_related("author__profile", "author")
     recent_replies = recent_replies.order_by("-pk")[:settings.REPLIES_FEED_COUNT]
 
     context = dict(recent_votes=recent_votes, recent_awards=recent_awards, users=[],
