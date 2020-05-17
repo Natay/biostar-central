@@ -26,18 +26,15 @@ def finalize_job(job, data):
     Insert file from data dict into database.
 
     [[settings.create]]
-    # Only source is required.
-    source = runlog
+    # Can be a single file or directory.
+    file = runlog
     uid =
-    name
+    name =
     text =
     type =
 
-    [[settings.files]]
-    file = bar
-
      # List of files
-    {'settings': {'create': [ {'source':'foo', }, {'source':'bar'} ]  }
+    {'settings': {'create': [ {'file':'foo', }, {'file':'bar'} ]  }
 
     """
 
