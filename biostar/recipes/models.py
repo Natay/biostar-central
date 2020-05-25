@@ -472,6 +472,9 @@ class Analysis(models.Model):
     html = models.TextField(default='html')
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # Base Github url to sync toml and template.
+    github_url = models.URLField(max_length=1000)
+
     # The rank in a recipe list.
     rank = models.FloatField(default=100)
 
@@ -498,11 +501,28 @@ class Analysis(models.Model):
     def __str__(self):
         return self.name
 
+    def get_remote_toml(self):
+        """
+        Use self.github_url to pull most recent toml code
+        Find toml in recipes/< self.uid >/ toml.txt relative to self.github_url
+        """
+
+        return
+
+    def get_remote_code(self):
+        """
+        Use self.github_url to pull most recent recipe code template.
+        Find coed in recipes/< self.uid >/ recipe.sh relative to self.github_url
+        """
+        return
+
+
     @property
     def json_data(self):
         """
         Returns the json_text as parsed json_data
         """
+
         try:
             json_data = hjson.loads(self.json_text)
         except Exception as exc:
