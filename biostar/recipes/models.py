@@ -516,7 +516,6 @@ class Analysis(models.Model):
         """
         return
 
-
     @property
     def json_data(self):
         """

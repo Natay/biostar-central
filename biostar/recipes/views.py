@@ -70,11 +70,16 @@ def recycle_bin(request):
         projects = auth.get_project_list(user=user, include_deleted=True)
         query_dict = dict(project__in=projects, owner=user)
 
-    projects = projects.filter(deleted=True).order_by("-date")
-    data = Data.objects.filter(**query_dict, deleted=True).order_by("-date")
-    recipes = Analysis.objects.filter(**query_dict, deleted=True).order_by("-date")
+    projects = projects.filter(deleted=True).order_by("-lastedit_date")
+    data = Data.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")
+    recipes = Analysis.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")
     recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
-    jobs = Job.objects.filter(**query_dict, deleted=True).order_by("date")
+    jobs = Job.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")
+
+
+    # Get all objects here
+
+
     context = dict(jobs=jobs, data=data, recipes=recipes, projects=projects, active="bin")
 
     return render(request, 'recycle_bin.html', context=context)
