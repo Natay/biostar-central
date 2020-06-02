@@ -544,6 +544,14 @@ figure {
 }
 
 
+#side .item{
+    position: static;
+}
+
+
+#topmenu .item{
+    color: white;
+}
 #clipboard .message{
     display: contents
 }

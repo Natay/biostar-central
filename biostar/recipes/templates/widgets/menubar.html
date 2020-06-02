@@ -1,8 +1,9 @@
 {% load engine_tags %}
-
-<div class="ui large top fixed menu" style="box-shadow: none;">
+{% load static %}
+<div class="ui large top fixed menu" style="box-shadow: none; background: #292958;" id="topmenu">
     <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
-        <i class="home icon"></i>
+         <img class="ui avatar viewing image" src="{% static 'recipes_favicon.ico' %}"
+              style="width: 20px;height: 20px;"/> Bioinformatics Recipes
     </a>
     <div class="ui category search fluid item" >
         <div class="ui transparent icon input">

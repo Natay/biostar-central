@@ -46,13 +46,11 @@
 {% block menu %}
     {% menubar request=request %}
 {% endblock %}
-<div class="ui large left fixed vertical menu" id='side'
-     style="box-shadow: none;     width: 19rem; overflow-y: auto;background-color: #ececec;top: 43px;">
+<div class="ui left fixed vertical menu" id='side'
+     style="box-shadow: none;     width: 15rem; overflow-y: auto;background-color: #f5f5f5;top: 49px;">
 
     {% if recipe or analysis %}
-        <div class="item" style=" background-color: #d5d1d1;">
-            <div class="muted"><b><i class="ellipsis horizontal icon"></i> RECIPE</b></div>
-        </div>
+
         <a class="item click" href="#" data-value="#info">
 
             <i class="info circle icon"></i> Description
@@ -82,34 +80,29 @@
     {% endif %}
 
     {% if project %}
-        <div class="item" style=" background-color: #d5d1d1;">
-            <div class="muted"><b><i class="ellipsis horizontal icon"></i> PROJECT</b></div>
-        </div>
+
         <a class="{% activate 'info' active %}  item" href="{% url 'project_view' project.uid %}">
-            <i class="info circle icon"></i>Project Info
+            Project Info
         </a>
         <span class="{% activate 'data' active %}  item">
-            <a href="{% url 'data_list' project.uid %}"><i class="file text icon"></i><span
+            <a href="{% url 'data_list' project.uid %}"><span
                     id="data_count">{{ data_count }}</span>&nbsp;Data</a>
             <a class="ui blue circular label" href="{% url 'data_upload' project.uid %}"><i class="plus icon"
                                                                                             style="float: right; margin: 0px"></i></a>
         </span>
         <span class="{% activate 'recipes' active %}  item">
-            <a href="{% url 'recipe_list' project.uid %}"><i class="file text icon"></i>{{ recipe_count }}&nbsp;Recipes</a>
+            <a href="{% url 'recipe_list' project.uid %}">{{ recipe_count }}&nbsp;Recipes</a>
             <a class="ui green circular label" href="{% url 'recipe_create' project.uid %}"><i class="plus icon"
                                                                                                style="float: right; margin: 0px"></i></a>
         </span>
 
 
         <a class="{% activate 'jobs' active %} item" href="{% url 'job_list' project.uid %}">
-            <i class="bar chart icon"></i><span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
+            <span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
         </a>
 
     {% endif %}
 
-    <div class="item" style=" background-color: #d5d1d1;">
-        <div class="muted"><b><i class="ellipsis horizontal icon"></i> GENERAL</b></div>
-    </div>
     <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
         <i class=" settings icon"></i> Latest Recipes
     </a>
