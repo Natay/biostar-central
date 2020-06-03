@@ -35,6 +35,11 @@ body {
 
 }
 
+.ui.menu.rec .item:before{
+    background: transparent;
+}
+
+
 #side .item{
     color: #979797;
 }
