@@ -7,6 +7,7 @@
     --job-erorr: #db2828;
     --job-running: #f2711c;
     --job-queued: #00b5ad;
+
 }
 
 body {
@@ -17,10 +18,16 @@ body {
 }
 
 
+
 #side .active {
-    background-color: #F4FFD7;
+    border-color: transparent !important;
+    //background-color: #F4FFD7;
     border-top: 2px solid #DAFFBD;
     border-bottom: 2px solid #DAFFBD;
+}
+
+#side .prj.active {
+    border-left: orange solid 8px !important;
 }
 
 #side .item:hover{
@@ -28,6 +35,9 @@ body {
 
 }
 
+#side .item{
+    color: #979797;
+}
 
 .ui.vertical.menu .item>i.icon {
     float: none;
@@ -35,6 +45,18 @@ body {
     margin-left: 0;
 }
 
+
+.recipes.grid .text.menu{
+    width: auto;
+}
+
+.faded.label {
+    opacity: 80%;
+}
+
+#interface .grid .labels .label{
+    width: 100%;
+}
 
 #top .header{
     margin-top: 0px;
@@ -352,7 +374,7 @@ pre.toml_code {
     box-shadow: 0 2px 4px 0 rgba(34, 36, 38, .12), 0 .01em .001em 0 rgba(34, 36, 38, .15) !important;
 }
 
-.file.item:hover {
+.emphasize.item:hover {
     background-color: #f2f2f2;
 }
 
@@ -512,16 +534,18 @@ figure {
     width: 15rem;
 }
 
+.data .items{
+    margin: 0px;
+}
+
+.data .segment{
+    padding: 0px;
+}
+
 .card .content:not(.extra):hover{
     cursor: pointer;
 }
 
-#clipboard{
-    position: absolute; /* or absolute */
-    text-align: center;
-    z-index: 100;
-
-}
 
 .popover {
 
@@ -553,10 +577,17 @@ figure {
 
 
 #topmenu .item{
-    color: white;
+    color: #c7c7c7;
     padding-top:5px;
     padding-bottom: 5px;
 }
+
+
+#side .prj.item{
+        border-left: orange solid;
+}
+
+
 #clipboard .message{
     display: contents
 }
@@ -568,7 +599,7 @@ figure {
 }
 
 .popover.success {
-    background-color: #fcfff5;
+    background-color: yellow;
     color: #2c662d;
 }
 

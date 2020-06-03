@@ -50,12 +50,28 @@ def valid_tag(text):
         raise ValidationError('You have too many tags (5 allowed)')
 
 
-def validate_tags_packages(text):
+def informative_choices(choices):
     """
-    Ensure tags contain at least one package name.
+    Map choices for post types to a more informative description.
+    """
+    mapper = {
+              Post.QUESTION: "Ask a question", Post.TUTORIAL: "Share a Tutorial",
+              Post.JOB: "Post a Job Opening", Post.FORUM: "Start a Discussion",
+              Post.TOOL: "Share a Tool", Post.NEWS: "Announce News"
+              }
+    new_choices = []
+    for c in choices:
+        new_choices.append((c[0], mapper.get(c[0], c[1])))
+
+    return new_choices
+
+
+def validate_tags_package(text):
+    """
+    Ensure at least one tag is present in the
     """
 
-    # Get the tags file to check against.
+    # Get the tags file.
 
 
     return
@@ -65,16 +81,10 @@ class PostLongForm(forms.Form):
 
     choices = [opt for opt in Post.TYPE_CHOICES if opt[0] in Post.TOP_LEVEL]
 
-    mapper = {
-              Post.QUESTION: "Ask a question", Post.TUTORIAL: "Share a Tutorial",
-              Post.JOB: "Post a Job Opening", Post.FORUM: "Start a Discussion",
-              Post.TOOL: "Share a Tool", Post.NEWS: "Announce News"
-              }
     if settings.ALLOWED_POST_TYPES:
         choices = [opt for opt in choices if opt[1] in settings.ALLOWED_POST_TYPES]
 
-    for idx ,opt in enumerate(choices):
-        choices[idx] = (opt[0], mapper.get(opt[0], opt[1]))
+    choices = informative_choices(choices=choices)
 
     post_type = forms.IntegerField(label="Post Type",
                                    widget=forms.Select(choices=choices, attrs={'class': "ui dropdown"}),
@@ -183,10 +193,9 @@ class PostModForm(forms.Form):
 
         # Options for top level posts.
         if post.is_toplevel:
-            prefix = [(BUMP_POST, "Bump post.")]
             suffix = [(CLOSE, "Close post ( reason required ). "),
                       (DUPLICATE, "Duplicated post ( links required ).")]
-            choices = prefix + choices + suffix
+            choices = [(BUMP_POST, "Bump post.")] + choices + suffix
             self.fields['comment'] = forms.CharField(required=False, max_length=1000, widget=forms.Textarea,
                                                      strip=True)
 

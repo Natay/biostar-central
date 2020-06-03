@@ -66,6 +66,12 @@ def user_icon(user):
     context = dict(user=user, score=score)
     return context
 
+@register.inclusion_tag('widgets/privacy_label.html')
+def privacy_label(project):
+    context = dict(project=project)
+    return context
+
+
 
 @register.inclusion_tag('widgets/list_view.html', takes_context=True)
 def list_projects(context, target):
@@ -81,6 +87,11 @@ def list_projects(context, target):
     projects = projects.order_by("-rank", "-lastedit_date")
 
     return dict(projects=projects, user=user, target=target)
+
+
+@register.filter
+def is_job(obj):
+    return isinstance(obj, Job)
 
 
 @register.simple_tag
@@ -128,6 +139,25 @@ def find_fragments(source, target, nfrags=3, offset=25):
         fragments.append((left,  right, text))
 
     return fragments
+
+
+@register.inclusion_tag('widgets/clipboard.html', takes_context=True)
+def clipboard(context, project_uid):
+
+    request = context['request']
+    user = request.user
+    project = Project.objects.filter(uid=project_uid).first()
+    board = auth.recent_clipboard(request=request)
+    key, vals = board
+    board_count = len(vals)
+
+    if project and auth.is_readable(user=user, obj=project) and board_count:
+        # Load items into clipboard
+        context = dict(count=board_count, board=key, is_recipe=key == const.COPIED_RECIPES)
+    else:
+        context = dict()
+
+    return context
 
 
 @register.filter
@@ -232,7 +262,7 @@ def activate(value1, value2):
     """
     Returns a color based on job status.
     """
-    return "active" if value1 == value2 else ''
+    return "orange active" if value1 == value2 else ''
 
 
 @register.simple_tag
@@ -277,10 +307,10 @@ def interface_options():
 
 
 @register.inclusion_tag('widgets/recipe_details.html', takes_context=True)
-def recipe_details(context, recipe):
+def recipe_details(context, recipe, include_copy=True):
     user = context['request'].user
 
-    return dict(user=user, recipe=recipe, project=recipe.project)
+    return dict(user=user, recipe=recipe, project=recipe.project, include_copy=include_copy)
 
 
 @register.simple_tag

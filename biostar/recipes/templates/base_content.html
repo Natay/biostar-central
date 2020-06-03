@@ -21,7 +21,7 @@
 
     <input type="hidden" id="project_id" value="{{ project.id }}">
 
-    <span id="clipboard"></span>
+<div id="clipboard">{% clipboard project.uid %}</div>
 
     {% csrf_token %}
     {% block segment %}
@@ -32,6 +32,11 @@
              <span><img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
              </span>
      </div>
+
+        {% if recipe or analysis %}
+
+    {% endif %}
+
     <span>
         {% block content %}
             Content

@@ -1,42 +1,54 @@
-
 import logging
-from django.db.models import Q
+from datetime import datetime
 from django.core.management.base import BaseCommand
-from biostar.forum.models import Post
 from django.conf import settings
-from biostar.forum import search, spam, api
+from biostar.forum.models import Post
+from biostar.forum import sync
 
 logger = logging.getLogger('engine')
-
-
-def load_from_api(base_url, api_key):
-
-    def load_posts():
-        return
-
-    def load_users():
-        return
-
-    return
 
 
 class Command(BaseCommand):
     help = 'Sync contents of one site to this one.'
 
     def add_arguments(self, parser):
+        parser.add_argument('--host', type=str, default="", help="Remote host name housing the postgres database.")
+        parser.add_argument('--dbname', type=str, default="", help="Remote postgres database name.")
+        parser.add_argument('--port', type=str, default="5432", help="Postgres port on remote host.")
+        parser.add_argument('--user', type=str, default="www", help="Postgres user.")
+        parser.add_argument('--password', type=str, default="", help="Postgres password.")
+        parser.add_argument('--batch', type=int, default=10, help="How many posts to load for the given date range.")
+        parser.add_argument('--start', type=str, default="",
+                            help="""Start syncing from this date; ISO format.""")
+        parser.add_argument('--update', action='store_true', default=True,
+                            help="""Preform update when syncing.""")
+        parser.add_argument('--reset', action='store_true', default=False,
+                            help="""Reset the last_synced date stored in the local database.
+                                    This only matters when syncing older dates ( --range is negative ). """)
+        parser.add_argument('--report', action='store_true', default=False,
+                            help="""Print report on what has/has not been synced between databases. """)
 
-        parser.add_argument('--remote_url', type=str, default="", help="Remote url used for api access.")
-        parser.add_argument('--api_key', type=str, default="", help="Remote url api key to decode emails.")
-        parser.add_argument('--batch', type=str, default="", help="Remote url api key to decode emails.")
+        parser.add_argument('--range', type=int, default=1,
+                            help="""Number of days to sync relative to --start.  
+                                    If --start is empty and --range is negative ( syncing older posts ) 
+                                    last_synced from db is chosen as the start.
+                                    
+                                    Use negative numbers to indicate looking syncing older posts. 
+                                    eg. -1 --> load post 1 day before start date
+                                         1 --> load posts 1 day after start date. """)
 
     def handle(self, *args, **options):
+        # Print database that will be synced.
+        logger.info(f"Local Database: {settings.DATABASE_NAME}")
 
-        # Index all un-indexed posts that have a root.
-        logger.info(f"Database: {settings.DATABASE_NAME}")
+        start_date = options['start']
+        date_range = options['range']
 
-        remote_url = options['remote_url']
+        report = options['report']
 
+        start_date = datetime.fromisoformat(start_date) if start_date else ''
 
-
-
-
+        if report:
+            sync.report(start=start_date, days=date_range, options=options)
+        else:
+            sync.sync_db(start=start_date, days=date_range, options=options)

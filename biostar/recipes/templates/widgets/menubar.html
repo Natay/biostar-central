@@ -1,12 +1,21 @@
 {% load engine_tags %}
 {% load static %}
 <div class="ui top fixed menu" style="box-shadow: none; background: #292958;" id="topmenu">
-    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}">
+    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}" style=" color: white!important;">
          <img class="ui avatar viewing image" src="{% static 'recipes_favicon.ico' %}"
               style="width: 20px;height: 20px;"/> Bioinformatics Recipes
     </a>
+    {% if user.is_superuser %}
 
+        <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
+             Data import
+        </a>
 
+        <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+            Site admin
+        </a>
+
+    {% endif %}
 
     <div class="right menu">
     <div class="ui category search item"  >

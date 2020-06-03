@@ -31,6 +31,9 @@ IP_WHITELIST = [
 
 BANNED_IPS = os.path.join(BASE_DIR, 'export', 'logs', 'banned.txt')
 
+# File containing list of tags, at least one being required
+#REQUIRED_TAGS = open()
+
 # The gravatar image used for users, applied to all users.
 GRAVATAR_ICON = ''
 
@@ -48,6 +51,9 @@ SPAM_INDEX_DIR = os.path.abspath(os.path.join(MEDIA_ROOT, '..', SPAM_INDEX_DIR))
 CLASSIFY_SPAM = True
 
 ENABLE_DIGESTS = False
+
+# Disable all asynchronous tasks
+DISABLE_TASKS = False
 
 # Log the time for each request
 TIME_REQUESTS = True
