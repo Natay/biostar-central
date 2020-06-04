@@ -48,7 +48,7 @@
     {% menubar request=request %}
 {% endblock %}
 
-<div class="ui left fixed vertical menu" id='side' style="box-shadow: none;     width: 15rem; overflow-y: auto;background-color: #f5f5f5;top: 40px;">
+<div class="ui left fixed vertical menu" id='side' style="box-shadow: none;     width: 17rem; overflow-y: auto;background-color: #f5f5f5;top: 40px;">
 
     <a class="ui   {% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
         <i class=" settings icon"></i> Latest Recipes
@@ -59,6 +59,7 @@
     </a>
 
     {% if user.is_authenticated %}
+
     <a class="ui {% activate 'jobs' active %} {% activate active "private" %}  {% activate 'info' active %}  {% activate 'data' active %} {% activate 'recipes' active %}  item"
        href="{% url 'project_list_private' %}">
         <i class=" briefcase icon"></i> My Projects
@@ -75,14 +76,43 @@
             <span id="data_count">{{ data_count }}</span>&nbsp;Data
         </a>
 
-
         <a  class="{% activate 'recipes' active %}  prj item" href="{% url 'recipe_list' project.uid %}">
                 {{ recipe_count }}&nbsp;Recipes</a>
 
         <a class="{% activate 'jobs' active %} prj item" href="{% url 'job_list' project.uid %}">
             <span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
         </a>
+{% if recipe or analysis %}
+              <a class="item click" href="#" data-value="#run">
+                    <i class="play olive icon"></i> Run recipe
+                </a>
 
+                <a class="item click" href="#info" data-value="#info">
+                    <i class="info blue circle icon"></i> Recipe description
+                </a>
+
+
+
+                <a class="item click" href="#results" data-value="#results">
+                    <i class="settings orange icon"></i> Recipe results ({{ recipe.job_count }})
+                </a>
+
+
+
+                <a class="item" href="{% url 'recipe_download' recipe.uid %}">
+                    <i class="download violet icon"></i> Download recipe
+                </a>
+
+
+                <a class="item click" href="#code" data-value="#code">
+                    <i class="code pink icon"></i> Recipe code
+                </a>
+
+
+                <a class="item click" href="#interface" data-value="#interface">
+                    <i class="tv brown icon"></i> Recipe interface
+                </a>
+{% endif %}
     {% endif %}
 {% comment %}
 
@@ -97,7 +127,7 @@
 <div class="ui container" id="top" style="margin-left: 18.0% !important; padding: 10px;margin-top: 43px;width: 80%;">
 
     {% include 'site_header.html' %}
-
+<div  class="ui basic segment">
 
     <div id="search-results"></div>
 
@@ -105,7 +135,7 @@
     {% block body %}
         Body
     {% endblock %}
-
+</div>
 </div>
 
 

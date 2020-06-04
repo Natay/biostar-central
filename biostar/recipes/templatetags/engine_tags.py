@@ -262,7 +262,7 @@ def activate(value1, value2):
     """
     Returns a color based on job status.
     """
-    return "orange active" if value1 == value2 else ''
+    return "active" if value1 == value2 else ''
 
 
 @register.simple_tag
@@ -272,6 +272,12 @@ def type_label(data):
         types = [label(t) for t in data.type.split(',')]
         return mark_safe(''.join(types))
     return ""
+
+
+@register.inclusion_tag("widgets/project_details.html")
+def project_details(project):
+
+    return dict(project=project)
 
 
 @register.simple_tag

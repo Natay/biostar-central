@@ -5,13 +5,6 @@
    Project Information
 {% endblock %}
 
-{% block ribbon %}
-    {% if user.is_authenticated %}
-        <a class="ui green label" href="{% url 'project_create' %}">
-            <i class="plus icon"></i>New Project
-        </a>
-    {% endif %}
-{% endblock %}
 
 {% block content %}
     <div id="project_view">
@@ -21,7 +14,7 @@
         <div class="ui divider"></div>
 
         <div class="muted">
-            {% privacy_label project %}
+            {#% privacy_label project %#}
             Project owned by <a href="{% url 'user_profile'  project.owner.profile.uid %}">
             {{ project.owner.profile.name }}
         </a>&bull;

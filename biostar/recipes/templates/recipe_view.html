@@ -23,50 +23,20 @@
 
 
     {% block segment %}
-
-    <div class="ui basic large segment" style="padding-top: 0; padding-left: 0px;padding-right: 37px;">
-
-     <div class="ui center aligned top-title header" >
-             <span><img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
-             </span>
-     </div>
-
-    <div class="ui six rec item menu" style="border: none;">
-              <a class="item click" href="#" data-value="#run">
-                    <i class="play olive icon"></i> Run recipe
-                </a>
-
-                <a class="item click" href="#info" data-value="#info">
-                    <i class="info blue circle icon"></i> Recipe description
-                </a>
-
-
-
-                <a class="item click" href="#results" data-value="#results">
-                    <i class="settings orange icon"></i> Recipe results ({{ recipe.job_count }})
-                </a>
-
-
-
-                <a class="item" href="{% url 'recipe_download' recipe.uid %}">
-                    <i class="download violet icon"></i> Download recipe
-                </a>
-
-
-                <a class="item click" href="#code" data-value="#code">
-                    <i class="code pink icon"></i> Recipe code
-                </a>
-
-
-                <a class="item click" href="#interface" data-value="#interface">
-                    <i class="tv brown icon"></i> Recipe interface
-                </a>
+        <div  class="ui basic segment">
+    <div class="ui basic segment" style="padding-top: 0; padding-left: 0px;padding-right: 37px;">
+                <div class="ui basic large segment">
+            <div class="ui divided link simple items">
+    {% recipe_details recipe include_copy %}
 
 </div>
-
+                </div>
     <span>
+
         {% block content %}
-                           <input type="hidden" id="recipe_id" value="{{ recipe.id }}">
+
+
+            <input type="hidden" id="recipe_id" value="{{ recipe.id }}">
 
     {# Info panel. Loads dynamically. #}
     <div class="ui basic large segment collapse" id="info">
@@ -108,6 +78,7 @@
         {% endblock %}
     </span>
     </div>
+        </div>
 {% endblock %}
 
 
