@@ -4,7 +4,7 @@
 
 
 {% block title %}
-{% comment %}       <div class="ui center aligned top-title header" >
+    {% comment %}       <div class="ui center aligned top-title header" >
          <span>
              <img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
          </span>
@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block body %}
-{% comment %}       <div class="ui center aligned top-title header" >
+    {% comment %}       <div class="ui center aligned top-title header" >
          <span>
              <img class="ui avatar  image" src="{% img project %}"/>{{ project.name }}
          </span>
@@ -22,27 +22,41 @@
 
     <input type="hidden" id="project_id" value="{{ project.id }}">
 
-<div id="clipboard">{% clipboard project.uid %}</div>
+    <div id="clipboard">{% clipboard project.uid %}</div>
 
     {% csrf_token %}
     {% block segment %}
-<div  class="ui basic segment">
-    <div class="ui basic large segment" style="padding-top: 0; padding-left: 0px;padding-right: 0px;">
+         <div class="ui vertical segment" style="    opacity: .9;">
 
-<div class="ui divided simple items">
-{% project_details project %}
+                <img class="ui  avatar image" src="{% img project %}"/>
 
-</div>
-    <div class="ui divider"></div>
-    <span>
+                <a href={{ project.url }}>{{ project.get_name }}</a>
+                <i class="right chevron icon"></i>
+                <a href="#"><i class="setting icon"></i>{{ active|upper }}</a>
+                {% if job or results %}
+                    <i class="right chevron icon"></i>
+                    <img class="ui  avatar image" src="{% img job.analysis %}">
+                    <a href="#">{{ job.name }}</a>
+                {% endif %}
+                  {% if recipe or analysis %}
+                    <i class="right chevron icon"></i>
+                    <img class="ui  avatar image" src="{% img recipe %}">
+                    <a href="#">{{ recipe.name }}</a>
+                {% endif %}
 
-        {% block content %}
-            Content
-        {% endblock %}
-    </span>
-    </div>
-</div>
-{% endblock %}
+
+         </div>
+        <div class="ui  basic large segment">
+
+
+
+            {% block content %}
+                Content
+            {% endblock %}
+            </div>
+
+
+    {% endblock %}
 
 
 {% endblock %}

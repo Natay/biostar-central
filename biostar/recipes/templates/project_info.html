@@ -2,13 +2,16 @@
 {% load engine_tags %}
 
 {% block headtitle %}
-   Project Information
+    Project Information
 {% endblock %}
 
 
 {% block content %}
     <div id="project_view">
 
+        <div class="ui divided simple items">
+            {% project_details project %}
+        </div>
         {{ project.html|safe }}
 
         <div class="ui divider"></div>

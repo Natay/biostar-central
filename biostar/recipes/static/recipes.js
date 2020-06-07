@@ -154,7 +154,7 @@ function toggle_panels(elem_id, quick) {
     var elem = $(elem_id);
 
     // Move the element so it is first, thus always opens downwards.
-    $(elem).parent().prepend(elem);
+    $(elem).prepend(elem);
 
     //Hide all collapsible elements.
     $(".collapse").hide();

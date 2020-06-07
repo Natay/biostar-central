@@ -7,6 +7,7 @@
     --job-erorr: #db2828;
     --job-running: #f2711c;
     --job-queued: #00b5ad;
+    --active-item: #dae1dd;
 
 }
 
@@ -177,9 +178,62 @@ pre.toml_code {
 
 }
 
+
+.sidenav {
+  height: 95%;
+  width: 230px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+      background-color: #fafafa;
+    box-shadow: inset -1px 0 0 #e5e5e5;
+  overflow-x: hidden;
+  //padding-top: 20px;
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+.sidenav i{
+    margin-right: 10px;
+}
+.sidenav .segment.active{
+    background-color: var( --active-item) !important;
+}
+
+.sidenav .segment{
+    background-color: transparent;
+    border: none !important;
+}
+.sidenav a {
+
+  //text-decoration: none;
+  //font-size: 25px;
+  //color: #818181;
+  display: block;
+    color: gray;
+}
+
+.sidenav a:hover {
+  //color: #f1f1f1;
+}
+
+.main {
+    margin-left: 252px;
+    margin-top: 40px !important;
+    margin-right: 90px;
+
+}
+
+
 #img.dimmer > .loader {
     top: 20px;
     width: 79px !important;
+}
+
+#top{
+    //margin-left: 0 !important;
+    //width: 100%;
 }
 
 .CodeMirror {
