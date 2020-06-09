@@ -154,7 +154,7 @@ function toggle_panels(elem_id, quick) {
     var elem = $(elem_id);
 
     // Move the element so it is first, thus always opens downwards.
-    $(elem).prepend(elem);
+    $(elem).parent().prepend(elem);
 
     //Hide all collapsible elements.
     $(".collapse").hide();
@@ -163,12 +163,12 @@ function toggle_panels(elem_id, quick) {
     if (quick) {
         elem.show()
     } else {
-        elem.show("slow", function () {
-        });
+        elem.show("slow", function () {});
+
     }
 
     // Set the window location hash
-    //window.location.hash = elem_id;
+    window.location.hash = elem_id;
 
     // Remove active class on clickable object.
     $(".click").removeClass("active");
