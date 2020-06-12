@@ -71,6 +71,12 @@ body {
  font-size: 1.28571429rem;
 }
 
+.wmd-panel {
+    margin-left:0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    }
+
 
 #project_view h2 {
  font-size: 1.18571429rem;
@@ -131,9 +137,6 @@ pre.toml_code {
 }
 
 #img i {
-    position: absolute;
-    top: 0px;
-    right: 22%;
     font-size: 67px;
     opacity: .7;
 }
@@ -155,23 +158,8 @@ pre.toml_code {
 }
 
 
-#img.dimmer {
-    display: block;
-    position: relative;
-    height: 0px;
-    width: fit-content;
-    padding-right: .6em;
-    padding-left: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin-left: 0px
-}
 
-#img.running.dimmer > .mytiny.image {
-    opacity: .5
-}
-
-.job .text.container{
+.text.container{
     margin-left: 0 !important;
     margin-right: 0 !important;
     max-width: fit-content !important;
@@ -239,9 +227,12 @@ pre.toml_code {
 .CodeMirror {
     border: none;
     height: auto;
-/ / max-width: 927 px;
-/ / width: 107.6 %;
 
+}
+
+
+.job:hover{
+    box-shadow  !important;
 }
 
 .small-font {
@@ -253,18 +244,38 @@ pre.toml_code {
     left: calc(-1rem - 1.4em);
 }
 
-.ui.ribbon.label.obj {
-    left: 91.6%;
-    top:-5px;
+
+.wmd-button > span{
+    background-image: url('/static/pagedown/wmd-buttons.png') !important;
+}
+
+.wmd-button-bar{
+    background-color: transparent !important;
+}
+
+.pagedown-image-upload{
+    transform: none !important;
+    left: 35% !important;
+    top: 33% !important;
+}
+
+.wmd-preview{
+    padding:14px !important;
+    background: #ececec !important;
+    margin: 10px !important;
+    border-radius: 15px !important;
+}
+
+.wmd-prompt-background{
+    display: none !important;
+}
+
+.deletelink-box{
+    display: inline;
 }
 
 #clipboard .message .muted{
     margin-bottom: 1ex;
-}
-
-.ui.ribbon.label.info {
-    left: 14.3%;
-    float: right;
 }
 
 
@@ -438,7 +449,7 @@ pre.toml_code {
 }
 
 .job .buttons, .data .buttons, .recipe .buttons{
-    height: fit-content;
+   height: min-content;
 }
 
 
@@ -503,12 +514,16 @@ figure {
     display: inline-block !important;
 }
 
+.opaque{
+    opacity: .5;
+}
 
 .ui.mytiny.image, .ui.mytiny.images .image, .ui.mytiny.images img, .ui.mytiny.images svg {
     width: 80px;
     height: 80px;
     font-size: .85714286rem;
     max-width: none;
+    margin-bottom: 0;
 }
 
 .count {
@@ -703,6 +718,31 @@ a:hover {
     border-radius: 3px;
 }
 
+
+.parent {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.bottom.image {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.top.icon, .top.image, .top.loader {
+    position: absolute !important;
+    top: 5px !important;
+    left: 2px;
+
+}
+
+.top.loader{
+    display: inline;
+    font-size: 50px;
+    top: 24px !important;
+    left: 24px !important;
+}
 
 
 code {

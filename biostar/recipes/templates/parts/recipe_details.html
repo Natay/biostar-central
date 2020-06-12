@@ -1,7 +1,6 @@
 {% load static %}
 {% load engine_tags %}
 
-
 <div class="item " data-value="{{ recipe.uid }}">
 
     <img class="ui mytiny rounded fancy image" src="{% img recipe %}">
@@ -41,4 +40,11 @@
 
     {% endif %}
 </div>
+<script>
+    $(document).ready(function () {
+    $('pre').addClass('language-bash');
+    $('code').addClass('language-bash').css('padding', '0');
+    Prism.highlightAll();
+    });
+</script>
 

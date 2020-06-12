@@ -16,6 +16,7 @@
 
     {% endblock %}
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'recipes_favicon.ico' %}" type="image/x-icon"/>
 
@@ -28,11 +29,11 @@
         <link href="{% static 'engine.css' %}{% randparam %}" rel="stylesheet">
         <link href="{% static 'prism.css' %}" rel="stylesheet">
 
+
     {% endcompress %}
 
     {% compress js %}
-        <script src="{% static 'semantic.min.js' %}">
-        </script>
+        <script src="{% static 'semantic.min.js' %}"></script>
         <script src="{% static 'setup.js' %}{% randparam %}"></script>
         <script src="{% static 'engine.js' %}{% randparam %}"></script>
         <script src="{% static 'prism.js' %}{% randparam %}"></script>
@@ -67,17 +68,18 @@
     </a>
 
     {% endif %}
+
 {% if project %}
 <div class="ui divider"></div>
-{% comment %}
+
 <div class="ui segment">
 
 <img class="ui avatar image"src="{% img project %}"/>
     <span>
-                        {{ project.get_name }}
+                        {{ project.get_name|truncatechars:80 }}
                     </span>
 </div>
-{% endcomment %}
+
 
         <a class="{% activate 'info' active %}  ui segment" href="{% url 'project_view' project.uid %}" style="border: none">
             <i class="question icon "></i>Project Info
@@ -89,13 +91,9 @@
 
           <a  class="{% activate 'recipes' active %}  ui segment" href="{% url 'recipe_list' project.uid %}" style="border: none">
                 <i class="setting icon "></i> {{ recipe_count }}&nbsp;Recipes</a>
+
 {% comment %}{% if recipe or analysis %}
-    <div class="ui active segment">
-<img class="ui avatar image" src="{% img recipe %}">
-    <span>
-                        {{ recipe.get_name }}
-                    </span>
-</div>
+
 
 
 {% endif %}{% endcomment %}
@@ -106,6 +104,55 @@
 
 
     {% endif %}
+
+{% if recipe or analysis %}
+<div class="ui divider"></div>
+        <div class="ui segment">
+<img class="ui avatar image" src="{% img recipe %}">
+    <span>
+                        {{ recipe.get_name }}
+                    </span>
+</div>
+ {% comment %}   <a class="item click" >
+    <img class="ui mytiny rounded fancy image" src="{% img recipe %}">
+    </a>{% endcomment %}
+        <a class="ui segment item click" href="#" data-value="#run">
+      <i class="play olive icon"></i> Run
+    </a>
+
+     <a class="ui segment item click" href="#info" data-value="#info">
+          <i class="info blue circle icon"></i> Description
+    </a>
+
+       <a class="ui segment item click" href="#results" data-value="#results">
+        <i class="settings orange icon"></i> Results ({{ recipe.job_count }})
+    </a>
+
+
+       <a class="ui segment item click"  href="#interface" data-value="#interface">
+               <i class="tv brown icon"></i> Interface
+    </a>
+
+
+       <a class="ui segment item click"  href="#code" data-value="#code">
+             <i class="code pink icon"></i> Code
+    </a>
+
+
+              <a class="ui segment item" href="{% url 'recipe_download' recipe.uid %}">
+<i class="download violet icon"></i> Download
+    </a>
+
+
+
+
+{% endif %}
+<div class="ui divider"></div>
+    <p class="ui item muted smaller" style="text-align: center">
+        <a href="https://github.com/ialbert/biostar-central" class="ui image">
+            <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
+    </p>
+<div class="ui divider" style="border: 2px transparent;"></div>
 </div>
 
 </div>
@@ -170,51 +217,8 @@
         <a class="{% activate 'jobs' active %} prj item" href="{% url 'job_list' project.uid %}">
             <span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
         </a>
-{% if recipe or analysis %}
+        {% endcomment %}
 
-    <a class="item click" >
-    <img class="ui mytiny rounded fancy image" src="{% img recipe %}">
-    </a>
-
-              <a class="item click" href="#" data-value="#run">
-                    <i class="play olive icon"></i> Run recipe
-                </a>
-
-                <a class="item click" href="#info" data-value="#info">
-                    <i class="info blue circle icon"></i> Recipe description
-                </a>
-
-
-
-                <a class="item click" href="#results" data-value="#results">
-                    <i class="settings orange icon"></i> Recipe results ({{ recipe.job_count }})
-                </a>
-
-
-
-                <a class="item" href="{% url 'recipe_download' recipe.uid %}">
-                    <i class="download violet icon"></i> Download recipe
-                </a>
-
-
-                <a class="item click" href="#interface" data-value="#interface">
-                    <i class="tv brown icon"></i> Recipe interface
-                </a>
-                <a class="item click" href="#code" data-value="#code">
-                    <i class="code pink icon"></i> Recipe code
-                </a>
-
-
-{% endif %}
-    {% endif %}
-
-    <p class="ui item muted smaller" style="text-align: center">
-        <a href="https://github.com/ialbert/biostar-central" class="ui image">
-            <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
-    </p>
-
-
-</div>{% endcomment %}
 
 
 

@@ -4,6 +4,10 @@ import toml as hjson
 import hashlib
 import itertools
 import mistune
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.exceptions import PermissionDenied, ImproperlyConfigured
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,6 +15,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q, Count
 from django.template import loader
 from django.db.models import Sum
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -182,13 +187,8 @@ def project_list_public(request):
     user = request.user
     projects = auth.get_project_list(user=user)
 
-    # Filter for public and read access projects.
-    if user.is_authenticated:
-        projects = projects.filter(Q(access__user=user,
-                                     access__access__in=[Access.READ_ACCESS, Access.SHARE_ACCESS]) |
-                                   Q(privacy=Project.PUBLIC))
-    else:
-        projects = projects.filter(privacy=Project.PUBLIC)
+    # Filter for public projects
+    projects = projects.filter(privacy=Project.PUBLIC)
 
     projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
     context = dict(projects=projects, active="public")
@@ -198,11 +198,10 @@ def project_list_public(request):
 
 def project_list_private(request):
     user = request.user
-    projects = auth.get_project_list(user=request.user)
+    projects = auth.get_project_list(user=user)
 
-    # Filter for projects user has write access to
-    if user.is_authenticated:
-        projects = projects.filter(Q(access__user=request.user, access__access=Access.WRITE_ACCESS))
+    # Filter for private projects
+    #projects = projects.filter(privacy=Project.PRIVATE)
 
     projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
     context = dict(projects=projects, active="private")
@@ -224,7 +223,7 @@ def latest_recipes(request):
     """
 
     # Select public recipes
-    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, root=None, deleted=False).order_by("-id")[:50]
+    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, deleted=False).order_by("-id")[:50]
 
     recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
 
@@ -472,7 +471,6 @@ def recipe_run(request, uid):
         # The form validation will authorize the job.
         if form.is_valid():
             # Create the job from the recipe and incoming json data.
-            #print(form.cleaned_data)
             job = auth.create_job(analysis=recipe, user=request.user, fill_with=form.cleaned_data)
             # Spool via UWSGI or start it synchronously.
             tasks.execute_job.spool(job_id=job.id)
@@ -550,6 +548,7 @@ def get_part(request, name, id):
         interface="parts/recipe_interface.html",
         run="parts/recipe_run.html",
         results="parts/recipe_results.html",
+        details='parts/recipe_details.html',
     )
 
     name = remap.get(name, "parts/placeholder.html")
@@ -557,10 +556,13 @@ def get_part(request, name, id):
     # Check to see if this recipe is runnable by the user.
     is_runnable = auth.authorize_run(user=user, recipe=recipe)
 
+    # Check to see if recipe is editable
+    editable = auth.writeable_recipe(user=user, source=recipe)
+
     # Get the list of jobs required for recipe results
     jobs = recipe.job_set.filter(deleted=False).order_by("-lastedit_date").all()
     context = dict(recipe=recipe, form=form, is_runnable=is_runnable, job_list=jobs, rerun_btn=False,
-                   include_copy=False)
+                   include_copy=False, editable=editable, user=user, project=recipe.project)
     context.update(counts)
 
     html = render(request, name, context=context)
@@ -600,10 +602,13 @@ def recipe_view(request, uid):
     # Check to see if this recipe is runnable by the user.
     is_runnable = auth.authorize_run(user=user, recipe=recipe)
 
+    # Check to see if recipe is editable
+    editable = auth.writeable_recipe(user=user, source=recipe)
+
     # Generate the context.
     context = dict(recipe=recipe, job_list=jobs, project=project, form=form, btn_state=btn_state,
-                   is_runnable=is_runnable, active='recipes', rerun_btn=False,
-                   include_copy=False)
+                   is_runnable=is_runnable, activate='Recipe View', rerun_btn=False, active="recipes",
+                   include_copy=False, editable=editable)
 
     # Update context with counts.
     context.update(counts)
@@ -828,3 +833,26 @@ def import_files(request, path=""):
     context = dict(paths=paths, active="import", show_all=False)
 
     return render(request, 'import_files.html', context=context)
+
+
+@login_required
+@csrf_exempt
+def image_upload_view(request):
+
+    user = request.user
+
+    if not request.method == 'POST':
+        raise PermissionDenied()
+
+    if not settings.PAGEDOWN_IMAGE_UPLOAD_ENABLED:
+        raise ImproperlyConfigured('Image upload is disabled')
+
+    form = forms.ImageUploadForm(data=request.POST, files=request.FILES, user=user)
+    if form.is_valid():
+        url = form.save()
+        return JsonResponse({'success': True, 'url': url})
+
+    return JsonResponse({'success': False, 'error': form.errors})
+
+
+

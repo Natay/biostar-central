@@ -23,12 +23,25 @@ MAX_PROJECTS = 20
 # Root directory relative to the job path usd to store logs.
 JOB_LOGDIR = 'runlog'
 
+
+PAGEDOWN_IMAGE_UPLOAD_ENABLED = True
+
+
+# Upload path for pagedown images, relative to media root.
+PAGEDOWN_IMAGE_UPLOAD_PATH = "images"
+
 # Stdout filename for each job relative to the log directory.
 JOB_STDOUT = os.path.join(JOB_LOGDIR, 'stdout.txt')
 JOB_STDERR = os.path.join(JOB_LOGDIR, 'stderr.txt')
 
 # Maximum amount of data allowed
 MAX_DATA = 100
+
+# Maximum size per image uploaded, in mb.
+MAX_IMAGE_SIZE_MB = 1
+
+# Cumulative image size limited per user.
+TOTAL_IMAGE_SIZE_MB = 3
 
 # Maximum amount of items per clipboard
 MAX_CLIPBOARD = 5
@@ -64,10 +77,12 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 
 ENGINE_APPS = [
     'biostar.recipes.apps.EngineConfig',
-    'django.contrib.redirects'
+    'django.contrib.redirects',
 ]
 
-INSTALLED_APPS = DEFAULT_APPS + ENGINE_APPS + ACCOUNTS_APPS + EMAILER_APP
+PAGEDOWN_APP = ['pagedown.apps.PagedownConfig']
+
+INSTALLED_APPS = DEFAULT_APPS + ENGINE_APPS + ACCOUNTS_APPS + EMAILER_APP + PAGEDOWN_APP
 
 # Additional middleware.
 MIDDLEWARE += [

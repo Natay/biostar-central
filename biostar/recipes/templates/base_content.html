@@ -4,6 +4,7 @@
 
 
 {% block title %}
+
     {% comment %}       <div class="ui center aligned top-title header" >
          <span>
              <img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
@@ -26,7 +27,7 @@
 
     {% csrf_token %}
     {% block segment %}
-         <div class="ui vertical segment" style="    opacity: .8;">
+{% comment %}         <div class="ui vertical segment" style="    opacity: .8;">
 
                 <img class="ui  avatar image" src="{% img project %}"/>
 
@@ -45,10 +46,8 @@
                 {% endif %}
 
 
-         </div>
-        <div class="ui  basic large segment">
-
-
+         </div>{% endcomment %}
+ <div class="ui very padded basic large segment">
 
             {% block content %}
                 Content
