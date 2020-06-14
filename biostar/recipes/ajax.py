@@ -7,6 +7,8 @@ from ratelimit.decorators import ratelimit
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse
 from django.template import Template, Context
+from django.core.paginator import Paginator
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.template import loader
 from django.conf import settings
@@ -45,6 +47,28 @@ MAX_SNIPPETS_PER_CATEGORY = 30
 
 MAX_TAGS = 5
 
+class CachedPaginator(Paginator):
+    """
+    Paginator that caches the count call.
+    """
+    COUNT_KEY = "COUNT_KEY"
+
+    def __init__(self, count_key='', *args, **kwargs):
+        self.count_key = count_key or self.COUNT_KEY
+        super(CachedPaginator, self).__init__(*args, **kwargs)
+
+    @property
+    def count(self):
+
+        if self.count_key not in cache:
+            value = super(CachedPaginator, self).count
+            logger.info("Setting paginator count cache")
+            cache.set(self.count_key, value, 100)
+
+        value = cache.get(self.count_key)
+
+        return value
+
 
 class ajax_error_wrapper:
     """
@@ -67,6 +91,36 @@ class ajax_error_wrapper:
             return func(request, *args, **kwargs)
 
         return _ajax_view
+
+
+def lazy_project_list(request):
+    """
+    Load list of projects lazily
+    """
+
+    # Get current page number
+    page = request.GET.get("page", 1)
+
+    user = request.user
+
+    projects = auth.get_project_list(user=user)
+
+    # Filter for public projects
+    #projects = projects.filter(privacy=Project.PUBLIC)
+
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+
+    paginator = Paginator(projects, 3)
+
+    # Apply the post paging.
+    projects = paginator.get_page(page)
+    context = dict(projects=projects)
+
+    context = dict(job=job, check_back=check_back)
+    tmpl = loader.get_template('widgets/job_elapsed.html')
+    template = tmpl.render(context=context)
+
+    return render(request, 'parts/lazy_item.html', context=context)
 
 
 @ajax_error_wrapper(method="POST", login_required=True)

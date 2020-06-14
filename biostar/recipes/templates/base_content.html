@@ -5,21 +5,9 @@
 
 {% block title %}
 
-    {% comment %}       <div class="ui center aligned top-title header" >
-         <span>
-             <img class="ui avatar viewing image" src="{% img project %}"/>{{ project.name }}
-         </span>
-       </div>{% endcomment %}
-
 {% endblock %}
 
 {% block body %}
-    {% comment %}       <div class="ui center aligned top-title header" >
-         <span>
-             <img class="ui avatar  image" src="{% img project %}"/>{{ project.name }}
-         </span>
-       </div>{% endcomment %}
-
 
     <input type="hidden" id="project_id" value="{{ project.id }}">
 
@@ -27,32 +15,12 @@
 
     {% csrf_token %}
     {% block segment %}
-{% comment %}         <div class="ui vertical segment" style="    opacity: .8;">
-
-                <img class="ui  avatar image" src="{% img project %}"/>
-
-                <a href={{ project.url }}>{{ project.get_name }}</a>
-                <i class="right chevron icon"></i>
-                <a href="#"><i class="setting icon"></i>{{ active|upper }}</a>
-                {% if job or results %}
-                    <i class="right chevron icon"></i>
-                    <img class="ui  avatar image" src="{% img job.analysis %}">
-                    <a href="#">{{ job.name }}</a>
-                {% endif %}
-                  {% if recipe or analysis %}
-                    <i class="right chevron icon"></i>
-                    <img class="ui  avatar image" src="{% img recipe %}">
-                    <a href="#">{{ recipe.name }}</a>
-                {% endif %}
-
-
-         </div>{% endcomment %}
- <div class="ui very padded basic large segment">
+        <div class="ui very padded basic large segment">
 
             {% block content %}
                 Content
             {% endblock %}
-            </div>
+        </div>
 
 
     {% endblock %}

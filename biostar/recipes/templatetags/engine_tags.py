@@ -291,6 +291,17 @@ def img(obj):
         return urllib.parse.urljoin(settings.STATIC_URL, "images/placeholder.png")
 
 
+@register.inclusion_tag('parts/lazy_list.html')
+def init_lazy_project(user):
+
+    projects = auth.get_project_list(user=user)
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+    projects = projects[:3]
+    context = dict(objs=projects)
+
+    return context
+
+
 @register.inclusion_tag('widgets/show_messages.html')
 def show_messages(messages):
     """

@@ -170,6 +170,12 @@ function paste(data) {
     )
 }
 
+
+function popup_list(){
+
+
+}
+
 function clear() {
     var elem = $("#clipboard");
     $.ajax('/clear/', {
@@ -399,7 +405,6 @@ $(document).ready(function () {
         clear();
     });
 
-
     $('pre').addClass('language-bash');
     $('code').addClass('language-bash').css('padding', '0');
     Prism.highlightAll();
@@ -414,6 +419,18 @@ $(document).ready(function () {
     $('.admin').click(function () {
         $('#tools').toggle(400)
     });
+    $('#myproj').click(function () {
+        // TODO only if it is not already active.
+         $(".dropdown").show()
+        //alert("FOOO")
+    });
+
+   $('#load').click(function () {
+       // Get the current page
+       var page = $(this).closest();
+
+    });
+
 
 
 });
