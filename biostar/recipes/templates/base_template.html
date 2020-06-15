@@ -73,29 +73,8 @@
         {% endif %}
 
         {#% init_lazy_project user %#}
-    {% if user.is_authenticated %}
-<div class="ui divider"></div>
-        <div class="ui segment" style="padding: 6px;">
 
-            <a class="ui  large fluid label  " href="{% url 'project_create' %}" style="font-weight: 100;color: grey;">
-                <i class=" green plus  icon"></i> Create Project
-            </a>
-
-        </div>
-    {% endif %}
      {% if project %}
-
-      <div class="ui segment" style="padding: 6px;">
-
-            <a class="ui large fluid label" href="{% url "recipe_create" project.uid %}" style="font-weight: 100;color: grey;"  >
-                <i class=" orange setting  icon"></i> Create Recipe
-            </a>
-      </div>
-     <div class="ui segment" style="padding: 6px;">
-            <a class="ui large fluid label" href="{% url "data_upload" project.uid %}"  style="font-weight: 100;color: grey;" >
-                <i class=" blue folder  icon"></i>  Add Data
-            </a>
-      </div>
 
             <div class="ui divider"></div>
 
@@ -173,6 +152,30 @@
 
 
         {% endif %}
+    {% if user.is_authenticated %}
+<div class="ui divider"></div>
+        <div class="ui segment" style="padding: 6px;">
+
+            <a class="ui  large fluid label  " href="{% url 'project_create' %}" style="font-weight: 100;color: grey;">
+                <i class=" green plus  icon"></i> Create Project
+            </a>
+
+        </div>
+    {% endif %}
+        {% if project %}
+                  <div class="ui segment" style="padding: 6px;">
+
+            <a class="ui large fluid label" href="{% url "recipe_create" project.uid %}" style="font-weight: 100;color: grey;"  >
+                <i class=" orange setting  icon"></i> Create Recipe
+            </a>
+      </div>
+     <div class="ui segment" style="padding: 6px;">
+            <a class="ui large fluid label" href="{% url "data_upload" project.uid %}"  style="font-weight: 100;color: grey;" >
+                <i class=" blue folder  icon"></i>  Add Data
+            </a>
+      </div>
+
+    {% endif %}
         <div class="ui divider"></div>
         <p class="ui item muted smaller" style="text-align: center">
             <a href="https://github.com/ialbert/biostar-central" class="ui image">
