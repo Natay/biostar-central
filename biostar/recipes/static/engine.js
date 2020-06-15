@@ -419,18 +419,46 @@ $(document).ready(function () {
     $('.admin').click(function () {
         $('#tools').toggle(400)
     });
-    $('#myproj').click(function () {
+    $('#myproj, .dropdown').mouseenter(function () {
         // TODO only if it is not already active.
          $(".dropdown").show()
         //alert("FOOO")
     });
 
+    $('#myproj, .dropdown').mouseleave(function () {
+        // TODO only if it is not already active.
+         $(".dropdown").hide()
+        //alert("FOOO")
+    });
    $('#load').click(function () {
        // Get the current page
-       var page = $(this).closest();
+       var lazy = $('#lazy');
+       var page = lazy.data('page');
+
+       //alert(page)
+
+       $.ajax("/lazy/project/list/", {
+            type: 'GET',
+            dataType: 'json',
+            data: {'page': page},
+            success: function (data) {
+                //alert(data.status);
+                if (data.status === 'success') {
+                      lazy.append(data.html);
+                      lazy.data('page', data.next);
+                      //alert(lazy[0].scrollHeight);
+                      lazy.closest('.segment').scrollTop(lazy[0].scrollHeight);
+                }
+
+            },
+            error: function () {
+                alert("foo")
+            }
+        });
 
     });
 
+    $('.sidenav').scrollTop($('.sidenav')[0].scrollHeight);
 
 
 });

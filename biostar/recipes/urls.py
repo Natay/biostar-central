@@ -92,7 +92,7 @@ recipes_patterns = [
     path(r'api/project/image/<str:uid>/', api.project_image, name='project_api_image'),
 
     # Lazy listing
-    path(r'lazy/project/list', ajax.lazy_project_list, name='lazy_project_ist'),
+    path(r'lazy/project/list/', ajax.lazy_project_list, name='lazy_project_ist'),
 
 ]
 

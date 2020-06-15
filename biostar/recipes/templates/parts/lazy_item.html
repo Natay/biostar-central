@@ -1,5 +1,5 @@
 {% load engine_tags %}
-
+{% for item in objs %}
 <div class="emphasize item">
 
     {% if item|is_job %}
@@ -12,8 +12,8 @@
             <i class="linkify icon"></i>
         {% endif %}
 
-        <a href="{{ item.url }}">{{ item.get_name|truncatechars:150 }}</a>
+        <a href="{{ item.url }}">{{ item.get_name|truncatechars:50 }}</a>
 
     </div>
 </div>
-
+{% endfor %}

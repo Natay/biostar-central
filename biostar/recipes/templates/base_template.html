@@ -62,19 +62,18 @@
         </a>
         {% if user.is_authenticated %}
 
-            <div class="ui segment {% activate active "private" %}   item" >
-                <a href="{% url 'project_list_private' %}" style="display: inline-block">
-                    <i class=" briefcase  icon"></i> My Projects</a>
+            <a href="{% url 'project_list_private' %}"
+                 class="ui segment {% activate active "private" %}   item" id="myproj">
+
+                    <i class=" briefcase  icon"></i> My Projects
 
 
-                <a href="#" class="ui basic label" style="float: right;    padding: 5px;" id="myproj">
-                    <i class="right chevron icon" style="margin-right: 0px"></i></a>
-
-            </div>
+            </a>
 
         {% endif %}
 
         {#% init_lazy_project user %#}
+    {% if user.is_authenticated %}
 <div class="ui divider"></div>
         <div class="ui segment" style="padding: 6px;">
 
@@ -83,6 +82,7 @@
             </a>
 
         </div>
+    {% endif %}
      {% if project %}
 
       <div class="ui segment" style="padding: 6px;">
@@ -185,7 +185,7 @@
 <div class="main">
     <div class="ui container" id="top">
 
-    {% init_lazy_project user %}
+    {% init_lazy_project user 2 %}
 {% comment %}<div class="dropdown" style="    top: 26%; margin-left: -22px;">
 
   <div class="ui segment">

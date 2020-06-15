@@ -187,7 +187,22 @@ pre.toml_code {
   display: none;
   z-index: 100001;
 }
+.lazy.list{
+    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
+    max-height: 50px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
 
+.lazy.segment{
+    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
+    min-height: 100px;
+    min-width: 250px;
+    width: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 250px;
+}
 
 .sidenav i{
     margin-right: 10px;

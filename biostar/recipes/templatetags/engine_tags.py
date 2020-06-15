@@ -292,12 +292,12 @@ def img(obj):
 
 
 @register.inclusion_tag('parts/lazy_list.html')
-def init_lazy_project(user):
+def init_lazy_project(user, page):
 
     projects = auth.get_project_list(user=user)
     projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
     projects = projects[:3]
-    context = dict(objs=projects)
+    context = dict(objs=projects, page=page)
 
     return context
 

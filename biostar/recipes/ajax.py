@@ -100,27 +100,26 @@ def lazy_project_list(request):
 
     # Get current page number
     page = request.GET.get("page", 1)
-
+    page = int(page)
     user = request.user
 
     projects = auth.get_project_list(user=user)
 
     # Filter for public projects
-    #projects = projects.filter(privacy=Project.PUBLIC)
-
     projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
-
     paginator = Paginator(projects, 3)
-
     # Apply the post paging.
     projects = paginator.get_page(page)
-    context = dict(projects=projects)
 
-    context = dict(job=job, check_back=check_back)
-    tmpl = loader.get_template('widgets/job_elapsed.html')
+    # Last page.
+    if page > paginator.num_pages:
+        return ajax_success(html="", msg="End of list.")
+
+    context = dict(objs=projects)
+    tmpl = loader.get_template('parts/lazy_item.html')
     template = tmpl.render(context=context)
 
-    return render(request, 'parts/lazy_item.html', context=context)
+    return ajax_success(html=template, msg="success", next=page+1)
 
 
 @ajax_error_wrapper(method="POST", login_required=True)
