@@ -4,6 +4,7 @@ import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from biostar.accounts.urls import account_patterns
+from biostar.accounts.views import image_upload_view
 from biostar.recipes import views, api, ajax
 
 recipes_patterns = [
@@ -49,6 +50,7 @@ recipes_patterns = [
     path(r'data/view/<str:uid>/', views.data_view, name='data_view'),
     path(r'data/edit/<str:uid>/', views.data_edit, name='data_edit'),
     path(r'data/upload/<str:uid>/', views.data_upload, name='data_upload'),
+    path(r'data/download/<str:uid>/', views.data_download, name='data_download'),
     path(r'data/delete/<str:uid>/', views.data_delete, name='data_delete'),
     re_path(r'^data/serve/(?P<uid>[-\w]+)/(?P<path>.+)$', views.data_serve, name='data_serve'),
 
@@ -63,6 +65,7 @@ recipes_patterns = [
     path(r'ajax/recipe/edit/<int:id>/', ajax.ajax_edit, name='ajax_recipe_edit'),
     # Renders an HTML form field base on the TOML input.
     path(r'ajax/field/render/', ajax.field_render, name='ajax_field_render'),
+    path(r'ajax/move/', ajax.ajax_move, name='ajax_move'),
 
     path(r'recipe/delete/<str:uid>/', views.recipe_delete, name='recipe_delete'),
     path(r'recipe/code/download/<str:uid>/', views.recipe_code_download, name='recipe_download'),
@@ -104,12 +107,14 @@ urlpatterns = [
     # Include the accounts urls
     path(r'accounts/', include(account_patterns)),
 
-    # Pagedown image upload url.
-    #path('', include('pagedown.urls')),
-    path('pagedown/image-upload/', views.image_upload_view, name="pagedown-image-upload"),
-
 ]
 
+if settings.PAGEDOWN_IMAGE_UPLOAD_ENABLED:
+
+    urlpatterns += [
+        # Pagedown image upload url.
+        path('pagedown/image-upload/', image_upload_view, name="pagedown-image-upload")
+    ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT, show_indexes=True)

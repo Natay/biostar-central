@@ -275,11 +275,6 @@ pre.toml_code {
     background-color: transparent !important;
 }
 
-.pagedown-image-upload{
-    transform: none !important;
-    left: 35% !important;
-    top: 33% !important;
-}
 
 .wmd-preview{
     padding:14px !important;
@@ -302,8 +297,10 @@ pre.toml_code {
 
 
 .ui.message.log {
-    width: 20%;
+    //width: 20%;
 }
+
+
 
 .ui.message.log > span:nth-child(2) {
     padding-right: 5px

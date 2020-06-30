@@ -34,9 +34,8 @@ function trigger_running(job, data) {
         // Anchor link to the log when job is running
         link.attr("href", '/job/view/{0}/#log'.format(uid));
         // Add the "Running" loader under log
-        loader.html('<div id="log" class="ui log message">' +
+        loader.html('<div id="log" class="ui log compact message">' +
             '<span class="ui active small inline loader"></span>' +
-            '<span>Running</span>' +
             '</div>');
     } else {
         loader.html("");
@@ -89,6 +88,32 @@ function check_jobs() {
         })
     });
 
+}
+
+
+function move(data){
+    var elem = $("#clipboard");
+    $.ajax('/ajax/move/',
+        {
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+
+            success: function (data) {
+                if (data.status === "success") {
+                    window.location.href = data.redirect;
+                    popup_message(elem, data.msg, data.status, 500);
+                } else {
+                    popup_message(elem, data.msg, data.status, 2000)
+                }
+            },
+            error: function (xhr, status, text) {
+                error_message(container, xhr, status, text)
+            }
+
+
+        }
+    )
 }
 
 
@@ -401,6 +426,11 @@ $(document).ready(function () {
         paste(data);
     });
 
+    $(this).on('click', '#clipboard .move', function () {
+        var data = {"id": project_id()};
+        move(data);
+    });
+
     $(this).on('click', '#clipboard .clear', function () {
         clear();
     });
@@ -409,56 +439,7 @@ $(document).ready(function () {
     $('code').addClass('language-bash').css('padding', '0');
     Prism.highlightAll();
 
-    $('.visible.example .ui.sidebar')
-        .sidebar({
-            context: '.visible.example .bottom.segment'
-        })
-        .sidebar('hide')
-    ;
-
-    $('.admin').click(function () {
-        $('#tools').toggle(400)
-    });
-    $('#myproj, .dropdown').mouseenter(function () {
-        // TODO only if it is not already active.
-         $(".dropdown").show()
-        //alert("FOOO")
-    });
-
-    $('#myproj, .dropdown').mouseleave(function () {
-        // TODO only if it is not already active.
-         $(".dropdown").hide()
-        //alert("FOOO")
-    });
-   $('#load').click(function () {
-       // Get the current page
-       var lazy = $('#lazy');
-       var page = lazy.data('page');
-
-       //alert(page)
-
-       $.ajax("/lazy/project/list/", {
-            type: 'GET',
-            dataType: 'json',
-            data: {'page': page},
-            success: function (data) {
-                //alert(data.status);
-                if (data.status === 'success') {
-                      lazy.append(data.html);
-                      lazy.data('page', data.next);
-                      //alert(lazy[0].scrollHeight);
-                      lazy.closest('.segment').scrollTop(lazy[0].scrollHeight);
-                }
-
-            },
-            error: function () {
-                alert("foo")
-            }
-        });
-
-    });
 
     $('.sidenav').scrollTop($('.sidenav')[0].scrollHeight);
-
 
 });

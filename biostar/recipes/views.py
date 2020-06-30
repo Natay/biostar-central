@@ -223,7 +223,8 @@ def latest_recipes(request):
     """
 
     # Select public recipes
-    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, deleted=False).order_by("-id")[:50]
+    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, deleted=False)
+    recipes = recipes.order_by("-lastedit_date", "-rank")[:50]
 
     recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
 
@@ -507,8 +508,11 @@ def job_rerun(request, uid):
 
     # Spool via UWSGI or run it synchronously.
     tasks.execute_job.spool(job_id=job.id)
+    if auth.is_readable(user=request.user, obj=recipe):
+        url = reverse('recipe_view', kwargs=dict(uid=job.analysis.uid)) + "#results"
+    else:
+        url = job.url()
 
-    url = reverse('recipe_view', kwargs=dict(uid=job.analysis.uid)) + "#results"
     return redirect(url)
 
 
@@ -721,7 +725,7 @@ def job_view(request, uid):
     return render(request, "job_view.html", context=context)
 
 
-def file_serve(request, path, obj):
+def file_serve(request, path, obj, download=False):
     """
     Authenticates access through decorator before serving file.
     """
@@ -745,7 +749,7 @@ def file_serve(request, path, obj):
     size = os.path.getsize(file_path) / 1024 / 1024
 
     # This behavior can be further customized in front end webserver.
-    if size < 20:
+    if size < 20 and not download:
         # Return small files in the browser if possible.
         data = sendfile(request, file_path, mimetype=mimetype)
     else:
@@ -763,6 +767,19 @@ def data_serve(request, uid, path):
     """
     obj = Data.objects.filter(uid=uid).first()
     return file_serve(request=request, path=path, obj=obj)
+
+
+@read_access(type=Data)
+def data_download(request, uid):
+    """
+    Download a given data object.
+    """
+    obj = Data.objects.filter(uid=uid).first()
+    files = obj.get_files()
+    # Get first file in data directory.
+    path = files[0]
+
+    return file_serve(request=request, path=path, obj=obj, download=True)
 
 
 def job_serve(request, uid, path):
@@ -833,26 +850,5 @@ def import_files(request, path=""):
     context = dict(paths=paths, active="import", show_all=False)
 
     return render(request, 'import_files.html', context=context)
-
-
-@login_required
-@csrf_exempt
-def image_upload_view(request):
-
-    user = request.user
-
-    if not request.method == 'POST':
-        raise PermissionDenied()
-
-    if not settings.PAGEDOWN_IMAGE_UPLOAD_ENABLED:
-        raise ImproperlyConfigured('Image upload is disabled')
-
-    form = forms.ImageUploadForm(data=request.POST, files=request.FILES, user=user)
-    if form.is_valid():
-        url = form.save()
-        return JsonResponse({'success': True, 'url': url})
-
-    return JsonResponse({'success': False, 'error': form.errors})
-
 
 
