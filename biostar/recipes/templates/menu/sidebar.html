@@ -1,0 +1,109 @@
+<div class="ui segments" style="border: none;box-shadow: none">
+
+    <a class="ui segment {% activate active "latest_recipes" %}" href="{% url 'latest_recipes' %}">
+        <i class=" settings  icon"></i> Latest Recipes
+    </a>
+
+    <a class="ui segment {% activate active "public" %}" href="{% url 'project_list_public' %}">
+        <i class=" list  icon"></i> Project List
+    </a>
+    {% if user.is_authenticated %}
+
+        <a href="{% url 'project_list_private' %}" class="ui segment {% activate active "private" %} item" id="myproj">
+            <i class=" briefcase  icon"></i> My Projects
+        </a>
+
+    {% endif %}
+
+    {% if project %}
+
+        <div class="ui divider"></div>
+
+        <div class="ui segment">
+            <img class="ui avatar image" src="{% img project %}"/>
+            <span>{{ project.get_name|truncatechars:80 }}</span>
+        </div>
+
+        <a class="{% activate 'info' active %}  ui segment" href="{% url 'project_view' project.uid %}" style="border: none">
+            <i class="question icon "></i>Project Info
+        </a>
+
+        <a class="{% activate 'data' active %}  ui segment" href="{% url 'data_list' project.uid %}" style="border: none">
+            <i class="file icon "></i> <span id="data_count">{{ data_count }}</span>&nbsp;Data
+        </a>
+
+        <a class="{% activate 'recipes' active %}  ui segment" href="{% url 'recipe_list' project.uid %}" style="border: none">
+            <i class="setting icon "></i> {{ recipe_count }}&nbsp;Recipes</a>
+
+        <a class="{% activate 'jobs' active %} ui segment" href="{% url 'job_list' project.uid %}" style="border: none">
+            <i class="bar chart icon "></i><span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
+        </a>
+
+    {% endif %}
+
+    {% if recipe %}
+        <div class="ui divider"></div>
+        <div class="ui segment">
+            <img class="ui avatar image" src="{% img recipe %}">
+            <span>{{ recipe.get_name }}</span>
+        </div>
+
+        <a class="ui segment item click" href="#" data-value="#run">
+            <i class="play olive icon"></i> Run
+        </a>
+
+        <a class="ui segment item click" href="#info" data-value="#info">
+            <i class="info blue circle icon"></i> Description
+        </a>
+
+        <a class="ui segment item click" href="#results" data-value="#results">
+            <i class="settings orange icon"></i> Results ({{ recipe.job_count }})
+        </a>
+
+        <a class="ui segment item click" href="#interface" data-value="#interface">
+            <i class="tv brown icon"></i> Interface
+        </a>
+
+        <a class="ui segment item click" href="#code" data-value="#code">
+            <i class="code pink icon"></i> Code
+        </a>
+
+        <a class="ui segment item" href="{% url 'recipe_download' recipe.uid %}">
+            <i class="download violet icon"></i> Download
+        </a>
+
+    {% endif %}
+    {% if user.is_authenticated %}
+        <div class="ui divider"></div>
+        <div class="ui segment" style="padding: 6px;">
+
+            <a class="ui  large fluid label  " href="{% url 'project_create' %}" style="font-weight: 100;color: grey;">
+                <i class=" green plus  icon"></i> Create Project
+            </a>
+
+        </div>
+    {% endif %}
+
+    {% if project %}
+        <div class="ui segment" style="padding: 6px;">
+
+            <a class="ui large fluid label" href="{% url "recipe_create" project.uid %}" style="font-weight: 100;color: grey;">
+                <i class=" orange setting  icon"></i> Create Recipe
+            </a>
+        </div>
+        <div class="ui segment" style="padding: 6px;">
+            <a class="ui large fluid label" href="{% url "data_upload" project.uid %}" style="font-weight: 100;color: grey;">
+                <i class=" blue folder  icon"></i> Add Data
+            </a>
+        </div>
+
+    {% endif %}
+
+    <div class="ui divider"></div>
+    <p class="ui item muted smaller" style="text-align: center">
+        <a href="https://github.com/ialbert/biostar-central" class="ui image">
+            <img src="{% static 'images/badge-recipe.svg' %}">
+        </a> release {{ VERSION }}
+    </p>
+    <div class="ui divider" style="border: 2px transparent;"></div>
+</div>

@@ -19,7 +19,6 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'recipes_favicon.ico' %}" type="image/x-icon"/>
-    <script src="https://unpkg.com/htmx.org@0.0.4/"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% recaptcha_init %}
 
@@ -63,30 +62,20 @@
         {% if user.is_authenticated %}
 
             <a href="{% url 'project_list_private' %}"
-                 class="ui segment {% activate active "private" %}   item" id="myproj">
+               class="ui segment {% activate active "private" %}   item" id="myproj">
 
-                    <i class=" briefcase  icon"></i> My Projects
-
-
+                <i class=" briefcase  icon"></i> My Projects
             </a>
 
         {% endif %}
 
-        {#% init_lazy_project user %#}
-
-     {% if project %}
+        {% if project %}
 
             <div class="ui divider"></div>
 
             <div class="ui segment">
-
-
                 <img class="ui avatar image" src="{% img project %}"/>
-                <span>
-                        {{ project.get_name|truncatechars:80 }}
-                    </span>
-
-
+                <span>{{ project.get_name|truncatechars:80 }}</span>
             </div>
 
             <a class="{% activate 'info' active %}  ui segment" href="{% url 'project_view' project.uid %}"
@@ -108,11 +97,9 @@
                 <i class="bar chart icon "></i><span id="job_count">{{ result_count }}</span><span class="phone">&nbsp;Results</span>
             </a>
 
-
-
         {% endif %}
 
-        {% if recipe or analysis %}
+        {% if recipe %}
             <div class="ui divider"></div>
             <div class="ui segment">
                 <img class="ui avatar image" src="{% img recipe %}">
@@ -148,38 +135,36 @@
                 <i class="download violet icon"></i> Download
             </a>
 
+        {% endif %}
+        {% if user.is_authenticated %}
+            <div class="ui divider"></div>
+            <div class="ui segment" style="padding: 6px;">
 
+                <a class="ui  large fluid label  " href="{% url 'project_create' %}"
+                   style="font-weight: 100;color: grey;">
+                    <i class=" green plus  icon"></i> Create Project
+                </a>
 
+            </div>
+        {% endif %}
+
+        {% if project %}
+            <div class="ui segment" style="padding: 6px;">
+
+                <a class="ui large fluid label" href="{% url "recipe_create" project.uid %}"
+                   style="font-weight: 100;color: grey;">
+                    <i class=" orange setting  icon"></i> Create Recipe
+                </a>
+            </div>
+            <div class="ui segment" style="padding: 6px;">
+                <a class="ui large fluid label" href="{% url "data_upload" project.uid %}"
+                   style="font-weight: 100;color: grey;">
+                    <i class=" blue folder  icon"></i> Add Data
+                </a>
+            </div>
 
         {% endif %}
-    {% if user.is_authenticated %}
-        <div class="ui divider"></div>
-        <div class="ui segment" style="padding: 6px;">
 
-            <a class="ui  large fluid label  " href="{% url 'project_create' %}" style="font-weight: 100;color: grey;">
-                <i class=" green plus  icon"></i> Create Project
-            </a>
-
-        </div>
-    {% endif %}
-        {% if project %}
-                         <div class="ui segment" style="padding: 6px;">
-
-        <div class="ui header"></div>
-      </div>
-                  <div class="ui segment" style="padding: 6px;">
-
-            <a class="ui large fluid label" href="{% url "recipe_create" project.uid %}" style="font-weight: 100;color: grey;"  >
-                <i class=" orange setting  icon"></i> Create Recipe
-            </a>
-      </div>
-     <div class="ui segment" style="padding: 6px;">
-            <a class="ui large fluid label" href="{% url "data_upload" project.uid %}"  style="font-weight: 100;color: grey;" >
-                <i class=" blue folder  icon"></i>  Add Data
-            </a>
-      </div>
-
-    {% endif %}
         <div class="ui divider"></div>
         <p class="ui item muted smaller" style="text-align: center">
             <a href="https://github.com/ialbert/biostar-central" class="ui image">
@@ -189,18 +174,9 @@
     </div>
 
 </div>
+
 <div class="main">
     <div class="ui container" id="top">
-
-    {% init_lazy_project user 2 %}
-{% comment %}<div class="dropdown" style="    top: 26%; margin-left: -22px;">
-
-  <div class="ui segment">
-  <p>Hello World!Hello World!Hello World!Hello World!</p>
-  </div>
-
-</div>{% endcomment %}
-        {% include 'site_header.html' %}
 
         <div id="search-results"></div>
 
