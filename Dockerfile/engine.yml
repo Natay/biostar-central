@@ -1,0 +1,21 @@
+name: engine
+channels:
+  - conda-forge
+  - bioconda
+  - r
+dependencies:
+  - fastqc
+  - multiqc
+  - bbmap
+  - centrifuge
+  - blast
+  - bwa
+  - samtools
+  - bioawk
+  - pysam
+  - seqtk
+  - bedtools
+  - subread
+  - kallisto
+  - trimmomatic
+  - salmon
