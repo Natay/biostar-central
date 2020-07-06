@@ -1,23 +1,31 @@
 {% load engine_tags %}
+{% load static %}
 
-<div class="ui large top attached menu">
-
-    <a class="{% activate "home" active %} item widescreen" href="/">
-        <i class="home icon"></i>
+<div  class="ui visible inverted top horizontal sidebar menu" style="box-shadow: none; background: #292958;" id="topmenu">
+    <a class="ui {% activate active "home" %} item" href="{% url 'index' %}" style=" color: white!important;">
+         <img class="ui avatar viewing image" src="{% static 'recipes_favicon.ico' %}"
+              style="width: 20px;height: 20px;"/> Bioinformatics Recipes
     </a>
+    {% if user.is_superuser %}
 
-    <div class="ui category search fluid item">
-        <div class="ui transparent icon input">
+        <a class="ui {% activate active "import" %}  item" href="{% url 'root_list' %}">
+             Data import
+        </a>
+
+        <a class="ui {% activate active "admin" %} item" href="{% url 'site_admin' %}">
+            Site admin
+        </a>
+
+    {% endif %}
+
+    <div class="right menu">
+    <div class="ui category search item"  >
+        <div class="ui  icon input">
             <input class="prompt" id="recipe-search" type="text"
-                   placeholder="Search recipes...">
+                   placeholder="Search recipes..." style="border-radius: .2rem;background-color: #72677f;">
             <i class="search link icon"></i>
         </div>
     </div>
-
-    <div class="right menu">
-        <a class="item widescreen" href="https://bioinformatics-recipes.readthedocs.io/">
-            <i class="question circle icon"></i> About
-        </a>
 
         {% if user.is_authenticated %}
                 <a class="{% activate "profile" active %} {% if user.is_superuser %}trusted{% endif %} item"

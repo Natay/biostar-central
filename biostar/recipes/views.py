@@ -4,12 +4,18 @@ import toml as hjson
 import hashlib
 import itertools
 import mistune
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.exceptions import PermissionDenied, ImproperlyConfigured
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q, Count
+from django.template import loader
 from django.db.models import Sum
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -60,6 +66,8 @@ def recycle_bin(request):
     "Recycle bin view for a user"
     user = request.user
 
+    BIN_LIMIT = 200
+
     if user.is_superuser:
         # Super users get access to all deleted objects.
         projects = Project.objects.all()
@@ -69,12 +77,23 @@ def recycle_bin(request):
         projects = auth.get_project_list(user=user, include_deleted=True)
         query_dict = dict(project__in=projects, owner=user)
 
-    projects = projects.filter(deleted=True).order_by("-date")
-    data = Data.objects.filter(**query_dict, deleted=True).order_by("-date")
-    recipes = Analysis.objects.filter(**query_dict, deleted=True).order_by("-date")
-    recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
-    jobs = Job.objects.filter(**query_dict, deleted=True).order_by("date")
-    context = dict(jobs=jobs, data=data, recipes=recipes, projects=projects, active="bin")
+    projects = projects.filter(deleted=True).order_by("-lastedit_date")[:BIN_LIMIT]
+
+    # Filter data, recipes, and jobs according to projects user has access to.
+    data = Data.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")[:BIN_LIMIT]
+
+    recipes = Analysis.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")[:BIN_LIMIT]
+
+    jobs = Job.objects.filter(**query_dict, deleted=True).order_by("-lastedit_date")[:BIN_LIMIT]
+
+    deleted = []
+
+    for obj in [projects, data, recipes, jobs]:
+        for item in obj:
+            deleted.append(item)
+
+    deleted = sorted(deleted, key=lambda x: x.lastedit_date, reverse=True)
+    context = dict(deleted=deleted, active="bin")
 
     return render(request, 'recycle_bin.html', context=context)
 
@@ -85,8 +104,11 @@ def project_delete(request, uid):
     project.deleted = not project.deleted
     project.save()
 
-    msg = f"Project:{project.name} successfully "
-    msg += "deleted!" if project.deleted else "restored!"
+    # Same function called tor restore projects.
+    if project.deleted:
+        msg = f"Project:{project.name} deleted"
+    else:
+        msg = f"Project:{project.name} restored"
 
     messages.success(request, msg)
 
@@ -133,6 +155,7 @@ def project_users(request, uid):
 
     counts = get_counts(project)
     context.update(counts)
+
     return render(request, "project_users.html", context=context)
 
 
@@ -161,36 +184,47 @@ def project_info(request, uid):
 
 
 def project_list_public(request):
-    return project_list(request, target='public')
+    user = request.user
+    projects = auth.get_project_list(user=user)
 
-
-def project_list_private(request):
-    return project_list(request, target='private')
-
-
-def project_list(request, target=None):
-
-    if target == 'private' and request.user.is_authenticated:
-        active = "private"
-        projects = auth.get_project_list(user=request.user, include_public=False)
-    else:
-        projects = auth.get_project_list(user=request.user)
-        projects = projects.exclude(privacy__in=[Project.PRIVATE, Project.SHAREABLE])
-        active = "public"
+    # Filter for public projects
+    projects = projects.filter(privacy=Project.PUBLIC)
 
     projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
-    context = dict(projects=projects, active=active)
+    context = dict(projects=projects, active="public")
 
     return render(request, "project_list.html", context=context)
 
 
+def project_list_private(request):
+    user = request.user
+    projects = auth.get_project_list(user=user)
+
+    # Filter for private projects
+    #projects = projects.filter(privacy=Project.PRIVATE)
+
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+    context = dict(projects=projects, active="private")
+
+    return render(request, "project_list.html", context=context)
+
+
+def project_list(request):
+
+    # Redirect authenticated users to my projects.
+    if request.user.is_authenticated:
+        return redirect("project_list_private")
+
+    return redirect("project_list_public")
+
+
 def latest_recipes(request):
     """
-
     """
 
     # Select public recipes
-    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, root=None, deleted=False).order_by("-id")[:50]
+    recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, deleted=False)
+    recipes = recipes.order_by("-lastedit_date", "-rank")[:50]
 
     recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
 
@@ -275,7 +309,8 @@ def project_view(request, uid, template_name="project_info.html", active='info',
 
     # Build the context for the project.
     context = dict(project=project, data_list=data_list, recipe_list=recipe_list, job_list=job_list,
-                   active=active, recipe_filter=recipe_filter, write_access=write_access, rerun_btn=True)
+                   active=active, recipe_filter=recipe_filter, write_access=write_access, rerun_btn=True,
+                   include_copy=False)
 
     # Compute counts for the project.
     counts = get_counts(project)
@@ -316,10 +351,15 @@ def project_create(request):
     Input is validated with a form and actual creation is routed through auth.create_project.
     """
     user = request.user
-    project = auth.create_project(user=user, text="Project information goes here. ")
+    project = auth.create_project(user=user, text="Project information goes here. ", name="Project")
 
-    messages.success(request, "Welcome to your new project.")
-    return redirect(reverse("project_info", kwargs=dict(uid=project.uid)))
+    # Ensure project name is unique.
+    project.name = f"{project.name} {project.id}"
+    project.text = f"Add more information on {project.name}"
+    project.save()
+
+    messages.success(request, "A new project has been created. Please set the project details")
+    return redirect(reverse("project_edit", kwargs=dict(uid=project.uid)))
 
 
 @read_access(type=Data)
@@ -330,7 +370,7 @@ def data_view(request, uid):
     project = data.project
     paths = auth.listing(root=data.get_data_dir())
     context = dict(data=data, project=project, paths=paths, serve_view="data_serve",
-                   activate='Selected Data', uid=data.uid, show_all=True)
+                   active='data', uid=data.uid, show_all=True)
     counts = get_counts(project)
     context.update(counts)
 
@@ -376,9 +416,9 @@ def data_upload(request, uid):
     # The current size of the existing data
     current_size = uploaded_files.aggregate(Sum("size"))["size__sum"] or 0
     # Maximum data that may be uploaded.
-    maximum_size = owner.profile.max_upload_size * 1024 * 1024
+    maximum_size = owner.profile.upload_size * 1024 * 1024
 
-    context = dict(project=project, form=form, activate="Add Data",
+    context = dict(project=project, form=form, active="data",
                    maximum_size=maximum_size,
                    current_size=current_size)
 
@@ -432,7 +472,6 @@ def recipe_run(request, uid):
         # The form validation will authorize the job.
         if form.is_valid():
             # Create the job from the recipe and incoming json data.
-            #print(form.cleaned_data)
             job = auth.create_job(analysis=recipe, user=request.user, fill_with=form.cleaned_data)
             # Spool via UWSGI or start it synchronously.
             tasks.execute_job.spool(job_id=job.id)
@@ -469,8 +508,11 @@ def job_rerun(request, uid):
 
     # Spool via UWSGI or run it synchronously.
     tasks.execute_job.spool(job_id=job.id)
+    if auth.is_readable(user=request.user, obj=recipe):
+        url = reverse('recipe_view', kwargs=dict(uid=job.analysis.uid)) + "#results"
+    else:
+        url = job.url()
 
-    url = reverse('recipe_view', kwargs=dict(uid=job.analysis.uid)) + "#results"
     return redirect(url)
 
 
@@ -510,6 +552,7 @@ def get_part(request, name, id):
         interface="parts/recipe_interface.html",
         run="parts/recipe_run.html",
         results="parts/recipe_results.html",
+        details='parts/recipe_details.html',
     )
 
     name = remap.get(name, "parts/placeholder.html")
@@ -517,13 +560,18 @@ def get_part(request, name, id):
     # Check to see if this recipe is runnable by the user.
     is_runnable = auth.authorize_run(user=user, recipe=recipe)
 
+    # Check to see if recipe is editable
+    editable = auth.writeable_recipe(user=user, source=recipe)
+
     # Get the list of jobs required for recipe results
     jobs = recipe.job_set.filter(deleted=False).order_by("-lastedit_date").all()
-    context = dict(recipe=recipe, form=form, is_runnable=is_runnable, job_list=jobs, rerun_btn=False)
+    context = dict(recipe=recipe, form=form, is_runnable=is_runnable, job_list=jobs, rerun_btn=False,
+                   include_copy=False, editable=editable, user=user, project=recipe.project)
     context.update(counts)
 
     html = render(request, name, context=context)
     return html
+
 
 @ensure_csrf_cookie
 @read_access(type=Analysis)
@@ -558,9 +606,13 @@ def recipe_view(request, uid):
     # Check to see if this recipe is runnable by the user.
     is_runnable = auth.authorize_run(user=user, recipe=recipe)
 
+    # Check to see if recipe is editable
+    editable = auth.writeable_recipe(user=user, source=recipe)
+
     # Generate the context.
     context = dict(recipe=recipe, job_list=jobs, project=project, form=form, btn_state=btn_state,
-                   is_runnable=is_runnable, activate='Recipe View', rerun_btn=False)
+                   is_runnable=is_runnable, activate='Recipe View', rerun_btn=False, active="recipes",
+                   include_copy=False, editable=editable)
 
     # Update context with counts.
     context.update(counts)
@@ -572,9 +624,14 @@ def recipe_view(request, uid):
 def recipe_create(request, uid):
     # Get the project
     project = Project.objects.filter(uid=uid).first()
-    recipe = auth.create_analysis(project=project, name="My New Recipe", template="echo 'Hello World!'")
+    recipe = auth.create_analysis(project=project, name="Recipe", template="echo 'Hello World!'")
+
+    # Ensure recipe names are distinguishable from one another.
+    recipe.name = f"{recipe.name} {recipe.id}"
+    recipe.save()
+
     url = reverse("recipe_view", kwargs=dict(uid=recipe.uid))
-    messages.success(request, "Welcome to your new recipe.")
+    messages.success(request, "A new recipe has been created.")
     return redirect(url)
 
 
@@ -601,16 +658,14 @@ def job_edit(request, uid):
 @write_access(type=Analysis, fallback_view="recipe_view")
 def recipe_delete(request, uid):
     recipe = Analysis.objects.filter(uid=uid).first()
-    clones = Analysis.objects.filter(root=recipe, deleted=False)
+    user = request.user
 
-    if recipe.is_root and clones.exists():
-        # Check if a root recipe
-        msg = "Can not delete a cloned recipe."
-        messages.success(request, msg)
-    else:
-        auth.delete_object(obj=recipe, request=request)
-        msg = f"Deleted <b>{recipe.name}</b>." if recipe.deleted else f"Restored <b>{recipe.name}</b>."
-        messages.success(request, mark_safe(msg))
+    auth.delete_recipe(recipe=recipe, user=user)
+    tmpl = loader.get_template('widgets/delete_msg.html')
+    context = dict(obj=recipe, undo_url=reverse('recipe_delete', kwargs=dict(uid=recipe.uid)))
+    msg = tmpl.render(context=context)
+
+    messages.success(request, mark_safe(msg))
 
     return redirect(reverse("recipe_list", kwargs=dict(uid=recipe.project.uid)))
 
@@ -662,7 +717,7 @@ def job_view(request, uid):
 
     paths = auth.listing(root=job.get_data_dir())
     context = dict(job=job, project=project, stderr=stderr, stdout=stdout,uid=job.uid, show_all=True,
-                   activate='View Result', paths=paths, serve_view="job_serve")
+                   active='jobs', paths=paths, serve_view="job_serve")
 
     counts = get_counts(project)
     context.update(counts)
@@ -670,7 +725,7 @@ def job_view(request, uid):
     return render(request, "job_view.html", context=context)
 
 
-def file_serve(request, path, obj):
+def file_serve(request, path, obj, download=False):
     """
     Authenticates access through decorator before serving file.
     """
@@ -694,7 +749,7 @@ def file_serve(request, path, obj):
     size = os.path.getsize(file_path) / 1024 / 1024
 
     # This behavior can be further customized in front end webserver.
-    if size < 20:
+    if size < 20 and not download:
         # Return small files in the browser if possible.
         data = sendfile(request, file_path, mimetype=mimetype)
     else:
@@ -712,6 +767,19 @@ def data_serve(request, uid, path):
     """
     obj = Data.objects.filter(uid=uid).first()
     return file_serve(request=request, path=path, obj=obj)
+
+
+@read_access(type=Data)
+def data_download(request, uid):
+    """
+    Download a given data object.
+    """
+    obj = Data.objects.filter(uid=uid).first()
+    files = obj.get_files()
+    # Get first file in data directory.
+    path = files[0]
+
+    return file_serve(request=request, path=path, obj=obj, download=True)
 
 
 def job_serve(request, uid, path):
@@ -782,3 +850,5 @@ def import_files(request, path=""):
     context = dict(paths=paths, active="import", show_all=False)
 
     return render(request, 'import_files.html', context=context)
+
+

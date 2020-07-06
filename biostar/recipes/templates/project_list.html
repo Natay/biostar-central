@@ -6,10 +6,6 @@
     Project List
 {% endblock %}
 
-{% block title %}
-    <i class="file listing icon"></i>Project list
-{% endblock %}
-
 
 {% block content %}
 
@@ -29,7 +25,7 @@
 
                     <div class="extra">
 
-                        <span class="ui label">{{ project.get_privacy_display }}</span>
+                        {% privacy_label project %}
 
                         <a href="{% url 'data_list' project.uid %}"><i class="file text icon"></i>{{ project.data_count }} data</a>&bull;
 
@@ -48,6 +44,7 @@
 
 
     {% if not projects %}
+
 
             <div class="ui warning message"><i class="ui warning circle icon"></i>No projects found.</div>
 

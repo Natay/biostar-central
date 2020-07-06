@@ -63,7 +63,6 @@ function preview_template(fields) {
 function update_preview() {
 
     let toml = $('#interface_editor').val();
-    let project = $('#interface').closest('.grid').data("project");
     let url = '/preview/json/';
     var id = get_id();
 
@@ -80,7 +79,8 @@ function update_preview() {
                 return
             }
             $('#preview').html(preview_template(data.html));
-
+            //alert(preview_template(data.html));
+            //$('#preview').show()
         }
     });
 }
@@ -101,7 +101,7 @@ function submit_form(elem) {
     var url = '/ajax/recipe/edit/{0}/'.format(id)
 
     // Remove any prior notification that may exist.
-    remove_messages()
+    remove_messages();
 
     $.ajax(url, {
             type: 'POST',
@@ -111,13 +111,14 @@ function submit_form(elem) {
             data: data,
             success: function (resp) {
                 if (resp.status === 'error') {
-                    show_message(elem, resp.msg, "error")
-                    flash("fadeout_error")
+                    show_message(elem, resp.msg, "error");
+                    //flash("fadeout_error")
                 } else {
                     if (window.location.hash === '#edit') {
                         toggle_panels('#info', 1);
                     } else {
-                        flash("fadeout_success")
+                        //flash("fadeout_final")
+
                         popover_message(form, resp.msg, "success")
                     }
                     update_panels();
@@ -135,12 +136,12 @@ function flash(cls) {
     elem = $(".CodeMirror");
 
     function fadeout() {
-        elem.removeClass(cls)
+        elem.removeClass(cls);
         elem.addClass("fadeout_final")
     }
 
     elem.removeClass("fadeout_final")
-    elem.addClass(cls)
+    elem.addClass(cls);
 
     setTimeout(fadeout, 1500);
 
@@ -153,7 +154,7 @@ function toggle_panels(elem_id, quick) {
     var elem = $(elem_id);
 
     // Move the element so it is first, thus always opens downwards.
-    $(elem).parent().prepend(elem);
+    $(elem).prepend(elem);
 
     //Hide all collapsible elements.
     $(".collapse").hide();
@@ -162,8 +163,8 @@ function toggle_panels(elem_id, quick) {
     if (quick) {
         elem.show()
     } else {
-        elem.show("slow", function () {
-        });
+        elem.show("slow", function () {});
+
     }
 
     // Set the window location hash
@@ -184,20 +185,54 @@ function toggle_panels(elem_id, quick) {
 // Updates content in dynamic panels
 function update_panels() {
 
-    var panels = ['info', 'run', 'results'];
-    var server = "/get/part/{0}/{1}/"
+    var panels = ['info', 'run', 'results', 'details'];
+    var server = "/get/part/{0}/{1}/";
     var id = get_id();
 
     function loader(name) {
         var node = $('#{0}'.format(name));
         var url = server.format(name, id);
         node.load(url, function (response, status, xhr) {
-
         });
     }
 
     panels.forEach(loader);
 }
+
+
+
+function validate_toml(input_field, toml_text){
+    /*
+     Check if a new toml field is already present in the text.
+     Increments the field key to resolve conflicts.
+     */
+
+    // List of the current toml parameter being added
+    var input_list = input_field.trim().split("\n");
+
+    /// Get the key of this interface parameter
+    var current = input_list[0].trim();
+    var key = current.slice(1, -1);
+    var i = 1;
+
+    // Loop until we get to a unique key
+    while (toml_text.includes(current, 0)){
+        new_key = "{0}_{1}".format(key, i);
+        current = "[{0}]".format(new_key);
+        console.log(current);
+        i ++;
+    }
+
+    input_list[0] = current;
+
+    // Join the new toml
+    let input_str = "\n\n" + input_list.join("\n");
+
+    return input_str
+
+
+}
+
 
 // Binds events dynamically.
 function bind_events() {
@@ -244,6 +279,6 @@ $(document).ready(function () {
     update_panels();
 
     // Bind the events.
-    bind_events()
+    bind_events();
 
 });

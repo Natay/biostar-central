@@ -42,7 +42,7 @@ recipes:
 	$(eval DJANGO_APP := biostar.recipes)
 	$(eval LOAD_COMMAND := project)
 	$(eval UWSGI_INI := site/test/recipes_uwsgi.ini)
-	$(eval HOST := hosts/www.bioinformatics.recipes)
+	$(eval TARGET:=recipes)
 
 bioconductor:
 	$(eval DJANGO_SETTINGS_MODULE := themes.bioconductor.settings)
@@ -150,6 +150,5 @@ remote_transfer:
 	cd conf/ansible && make transfer
 
 deploy:
-	@echo DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
 	@echo TARGET=${TARGET}
 	(cd conf/ansible && make deploy TARGET=${TARGET})

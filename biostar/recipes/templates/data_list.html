@@ -6,9 +6,6 @@
 {% endblock %}
 
 
-{% block ribbon %}
-    {% include 'widgets/upload_button.html' %}
-{% endblock %}
 
 
 {% block content %}
@@ -30,10 +27,9 @@
                                 <div class="ui small labels">
                                     {% size_label data %}
                                     {% type_label data %}
-                                    {% created_by date=data.lastedit_date user=data.owner %}
+                                    {% created_by date=data.lastedit_date user=data.lastedit_user %}
                                 </div>
                             </div>
-
                         </div>
 
                         {% if request.user.is_authenticated %}

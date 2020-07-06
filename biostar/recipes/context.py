@@ -8,6 +8,7 @@ def engine(request):
     The site will not load up without it.
     '''
 
-    params = dict(user=request.user, VERSION=VERSION, request=request)
+    lazy_page = request.GET.get("lazy_page")
+    params = dict(user=request.user, VERSION=VERSION, request=request, lazy_page=lazy_page)
 
     return params

@@ -34,9 +34,8 @@ function trigger_running(job, data) {
         // Anchor link to the log when job is running
         link.attr("href", '/job/view/{0}/#log'.format(uid));
         // Add the "Running" loader under log
-        loader.html('<div id="log" class="ui log message">' +
+        loader.html('<div id="log" class="ui log compact message">' +
             '<span class="ui active small inline loader"></span>' +
-            '<span>Running</span>' +
             '</div>');
     } else {
         loader.html("");
@@ -92,13 +91,40 @@ function check_jobs() {
 }
 
 
-function copy_object(uid, clipboard, container) {
+function move(data){
+    var elem = $("#clipboard");
+    $.ajax('/ajax/move/',
+        {
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+
+            success: function (data) {
+                if (data.status === "success") {
+                    window.location.href = data.redirect;
+                    popup_message(elem, data.msg, data.status, 500);
+                } else {
+                    popup_message(elem, data.msg, data.status, 2000)
+                }
+            },
+            error: function (xhr, status, text) {
+                error_message(container, xhr, status, text)
+            }
+
+
+        }
+    )
+}
+
+
+function copy_object(data, container) {
+
 
     $.ajax('/copy/object/',
         {
             type: 'POST',
             dataType: 'json',
-            data: {'uid': uid, 'clipboard': clipboard},
+            data: data,
 
             success: function (data) {
                 if (data.status === 'success') {
@@ -146,19 +172,18 @@ function copy_file(path, elem) {
 }
 
 
-function paste(data){
+function paste(data) {
     // Paste a given item into the clipboard
     var elem = $("#clipboard");
     $.ajax('/paste/', {
             type: 'POST',
             dataType: 'json',
-            data:data,
+            data: data,
             success: function (data) {
                 if (data.status === "success") {
-                     window.location.href = data.redirect;
-                     popup_message(elem, data.msg, data.status, 500);
-                }
-                else{
+                    window.location.href = data.redirect;
+                    popup_message(elem, data.msg, data.status, 500);
+                } else {
                     popup_message(elem, data.msg, data.status, 2000)
                 }
                 //popup_message(elem, data.msg, data.status, 2000)
@@ -170,20 +195,27 @@ function paste(data){
     )
 }
 
-function clear(){
+
+function popup_list(){
+
+
+}
+
+function clear() {
     var elem = $("#clipboard");
     $.ajax('/clear/', {
             type: 'POST',
             dataType: 'json',
             success: function (data) {
                 if (data.status === "success") {
-                     popup_message(elem, data.msg, data.status, 500);
-                     elem.hide();
-                     elem.html(data.html);
-                     elem.fadeIn("slow", function () {});
-                     $('.copied.item').each(function () {
-                         $(this).removeClass(" copied")
-                     })
+                    popup_message(elem, data.msg, data.status, 500);
+                    elem.hide();
+                    elem.html(data.html);
+                    elem.fadeIn("slow", function () {
+                    });
+                    $('.copied.item').each(function () {
+                        $(this).removeClass(" copied")
+                    })
                     return
                 }
                 popup_message(elem, data.msg, data.status, 4000)
@@ -195,17 +227,18 @@ function clear(){
     )
 }
 
-function update_clipboard(){
+function update_clipboard() {
     var elem = $("#clipboard");
     $.ajax('/clipboard/', {
             type: 'POST',
             dataType: 'json',
-            data:{"id": project_id()},
+            data: {"id": project_id()},
             success: function (data) {
                 if (data.html) {
-                     elem.hide();
-                     elem.html(data.html);
-                     elem.fadeIn("slow", function () {});
+                    elem.hide();
+                    elem.html(data.html);
+                    elem.fadeIn("slow", function () {
+                    });
                 }
                 //popup_message(elem, data.msg, data.status, 2000)
             },
@@ -351,21 +384,30 @@ $(document).ready(function () {
     $('.checkbox').checkbox();
 
     $(this).on('click', '.data .copy.button', function () {
-        let data = $(this).closest('.data');
-        let uid = data.data('value');
-        copy_object(uid, "data", data);
+        let obj = $(this).closest('.data');
+        let uid = obj.data('value');
+        var data = {'uid': uid, 'clipboard': "data"};
+        copy_object(data, obj);
     });
 
     $(this).on('click', '.job .copy.button', function () {
         let job = $(this).closest('.job');
         let uid = job.data('value');
-        copy_object(uid, "job", job);
+        var data = {'uid': uid, 'clipboard': "job"};
+        copy_object(data, job);
     });
 
     $(this).on('click', '.recipe .copy.button', function () {
         let recipe = $(this).closest('.recipe');
         let uid = recipe.data("value");
-        copy_object(uid, "recipe", recipe);
+        var data = {'uid': uid, 'clipboard': "recipe"};
+        copy_object(data, recipe);
+    });
+
+    $(this).on('click', '.recipes .copy', function () {
+        let recipe = $("#info");
+        var data = {'id': get_id(), 'clipboard': "recipe"};
+        copy_object(data, recipe);
     });
 
     $(this).on('click', '.file .copy', function () {
@@ -374,18 +416,19 @@ $(document).ready(function () {
         copy_file(path, file);
     });
 
-    $('#clipboard').each(function () {
-        update_clipboard();
-    });
-
     $(this).on('click', '#clipboard .paste', function () {
         var data = {"id": project_id()};
         paste(data);
     });
 
     $(this).on('click', '#clipboard .clone', function () {
-        var data = {"id": project_id(), "target":"clone"};
+        var data = {"id": project_id(), "target": "clone"};
         paste(data);
+    });
+
+    $(this).on('click', '#clipboard .move', function () {
+        var data = {"id": project_id()};
+        move(data);
     });
 
     $(this).on('click', '#clipboard .clear', function () {
@@ -395,5 +438,8 @@ $(document).ready(function () {
     $('pre').addClass('language-bash');
     $('code').addClass('language-bash').css('padding', '0');
     Prism.highlightAll();
+
+
+    $('.sidenav').scrollTop($('.sidenav')[0].scrollHeight);
 
 });

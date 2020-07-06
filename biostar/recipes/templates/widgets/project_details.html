@@ -1,0 +1,30 @@
+{% load engine_tags %}
+
+            <div class="item">
+
+                <img class="ui mytiny circular fancy image" src="{% img project %}"/>
+
+                <div class="content">
+
+                    <a class="subheader" href="{% url 'project_view' project.uid %}">
+                        <i class="database icon"></i>{{ project.get_name }}
+                    </a>
+<div class="meta">{{ project.summary|markdown|safe }} </div>
+
+                    <div class="extra">
+
+                        {% privacy_label project %}
+
+                        <a href="{% url 'data_list' project.uid %}"><i class="file text icon"></i>{{ project.data_count }} data</a>&bull;
+
+                        <a href="{% url 'recipe_list' project.uid %}"><i class="setting icon"></i>{{ project.recipes_count }}
+                            recipe{{ project.recipes_count|pluralize }}</a>&bull;
+
+                        <a href="{% url 'job_list' project.uid %}"><i class="bar chart icon"></i>{{ project.jobs_count }}
+                            result{{ project.jobs_count|pluralize }}</a>
+
+                        {% created_by date=project.lastedit_date user=project.lastedit_user %}
+
+                    </div>
+                </div>
+            </div>

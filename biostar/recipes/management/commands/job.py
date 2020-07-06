@@ -25,6 +25,7 @@ def finalize_job(job, data):
     """
     Insert file from data dict into database.
 
+    # Only file is required, it can be a directory as well.
     [[settings.create]]
     # Can be a single file or directory.
     file = runlog

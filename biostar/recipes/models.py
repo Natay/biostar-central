@@ -26,7 +26,6 @@ class Bunch(object):
 
 
 def make_html(text, user=None):
-
     if user and user.profile.trusted:
         html = mistune.markdown(text, escape=False)
     else:
@@ -131,7 +130,7 @@ class Project(models.Model):
     # Internal uid that is not editable.
     uid = models.CharField(max_length=32, unique=True)
     # Unique project label that is editable.
-    #TODO: being refactored out.
+    # TODO: being refactored out.
     label = models.CharField(max_length=32, unique=True, null=True)
 
     # FilePathField points to an existing project directory.
@@ -215,7 +214,7 @@ class Project(models.Model):
                 project_uid=self.uid,
                 id=self.pk,
 
-                ),
+            ),
             recipes=[recipe.uid for recipe in self.analysis_set.all()])
 
         return payload
@@ -228,6 +227,10 @@ class Project(models.Model):
         lines = self.text.splitlines() or ['']
         first = lines[0]
         return first
+
+    @property
+    def delete_url(self):
+        return reverse('project_delete', kwargs=dict(uid=self.uid))
 
     @property
     def is_shareable(self):
@@ -243,7 +246,7 @@ class Project(models.Model):
 
     def get_name(self):
         if self.deleted:
-            return f'Deleted: {self.name}'
+            return f'Deleted Project: {self.name}'
         return self.name
 
 
@@ -364,8 +367,22 @@ class Data(models.Model):
         except Exception as exc:
             return f"Error :{exc}"
 
+    def table_of_contents(self):
+        try:
+            target = self.get_path()
+            lines = open(target, 'rt').readlines()
+            lines = [os.path.relpath(path, self.get_data_dir()) for path in lines]
+        except Exception as exc:
+            return f"Error :{exc}"
+
+        return lines
+
     def __str__(self):
         return self.name
+
+    @property
+    def delete_url(self):
+        return reverse('data_delete', kwargs=dict(uid=self.uid))
 
     def get_data_dir(self):
         "The data directory"
@@ -449,7 +466,7 @@ class Data(models.Model):
 
     def get_name(self):
         if self.deleted:
-            return f'Deleted: {self.name}'
+            return f'Deleted Data: {self.name}'
 
         return self.name
 
@@ -553,6 +570,10 @@ class Analysis(models.Model):
         return self.project.get_project_dir()
 
     @property
+    def delete_url(self):
+        return reverse('recipe_delete', kwargs=dict(uid=self.uid))
+
+    @property
     def is_cloned(self):
         """
         Return True if recipe is a clone ( linked ).
@@ -588,6 +609,36 @@ class Analysis(models.Model):
         Project.objects.filter(analysis__root=self).update(lastedit_date=self.lastedit_date,
                                                            lastedit_user=self.lastedit_user)
 
+    def update_root(self):
+        """
+        Update the root whenever a child is updated.
+        """
+        if self.root:
+            root = Analysis.objects.filter(id=self.root.id)
+
+            # Sync root to children
+            self.root.json_text = self.json_text
+            self.root.template = self.template
+            self.root.name = self.name
+            self.root.security = self.security
+            self.root.lastedit_date = self.lastedit_date
+            self.root.lastedit_user = self.lastedit_user
+            self.root.text = self.text
+            self.root.html = self.html
+            self.root.image = self.image
+
+            # Update the root
+            root.update(json_text=self.root.json_text, template=self.root.template, name=self.root.name,
+                        security=self.root.security, lastedit_date=self.root.lastedit_date, image=self.root.image,
+                        lastedit_user=self.root.lastedit_user, text=self.root.text, html=self.root.html)
+
+            # Update the siblings
+            self.root.update_children()
+
+            # Update last edit user and date for root project.
+            Project.objects.filter(analysis=self.root).update(lastedit_date=self.root.lastedit_date,
+                                                              lastedit_user=self.root.lastedit_user)
+
     def url(self):
         assert self.uid, "Sanity check. UID should always be set."
         return reverse("recipe_view", kwargs=dict(uid=self.uid))
@@ -597,7 +648,7 @@ class Analysis(models.Model):
 
     def edit_url(self):
         # Return root edit url if this recipe is cloned.
-        #if self.is_cloned:
+        # if self.is_cloned:
         #    return reverse('recipe_edit', kwargs=dict(uid=self.root.uid))
 
         return reverse('recipe_view', kwargs=dict(uid=self.uid))
@@ -613,7 +664,7 @@ class Analysis(models.Model):
 
     def get_name(self):
         if self.deleted:
-            return f'Deleted: {self.name}'
+            return f'Deleted Recipe: {self.name}'
 
         return self.name
 
@@ -638,7 +689,7 @@ class Job(models.Model):
     lastedit_date = models.DateTimeField(default=timezone.now)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField(default='Result description.', max_length=MAX_TEXT_LEN)
+    text = models.TextField(default='Results generated by running the recipe.', max_length=MAX_TEXT_LEN)
     html = models.TextField(default='html')
 
     # Job creation date
@@ -698,6 +749,10 @@ class Job(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def delete_url(self):
+        return reverse('job_delete', kwargs=dict(uid=self.uid))
 
     def get_url(self, path=''):
         """
@@ -772,16 +827,23 @@ class Job(models.Model):
         super(Job, self).save(*args, **kwargs)
 
     @property
-    def summary(self):
+    def parameter_summary(self):
         """
-        Creates informative job summary that shows job parameters.
         """
-        summary_template = "widgets/job_summary.html"
+        summary_template = "widgets/job_summary.md"
         context = dict(data=self.json_data)
         template = loader.get_template(summary_template)
         result = template.render(context)
-
         return result
+
+    @property
+    def summary(self):
+        """
+        Return the first line in self.text.
+        """
+        lines = self.text.splitlines() or ['']
+        first = lines[0]
+        return first
 
     def runnable(self):
         """
@@ -792,6 +854,6 @@ class Job(models.Model):
 
     def get_name(self):
         if self.deleted:
-            return f'Deleted: {self.name}'
+            return f'Deleted Job: {self.name}'
 
         return self.name

@@ -7,14 +7,48 @@
     --job-erorr: #db2828;
     --job-running: #f2711c;
     --job-queued: #00b5ad;
+    --active-item: #dae1dd;
 
 }
 
 body {
-    background-color: #f8f8f9 !important;
-    padding-top: 1rem;
+    //background-color: #f8f8f9 !important;
+    padding-top: 0rem;
     font-family: "Lato", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     text-rendering: optimizeLegibility;
+}
+
+
+
+#side .active {
+    border-color: transparent !important;
+    //background-color: #F4FFD7;
+    border-top: 2px solid #DAFFBD;
+    border-bottom: 2px solid #DAFFBD;
+}
+
+#side .prj.active {
+    border-left: orange solid 8px !important;
+}
+
+#side .item:hover{
+    background-color: #F4FFD7;
+
+}
+
+.ui.menu.rec .item:before{
+    background: transparent;
+}
+
+
+#side .item{
+    color: #979797;
+}
+
+.ui.vertical.menu .item>i.icon {
+    float: none;
+    margin-right: .5rem;
+    margin-left: 0;
 }
 
 
@@ -22,15 +56,26 @@ body {
     width: auto;
 }
 
+.faded.label {
+    opacity: 80%;
+}
+
 #interface .grid .labels .label{
     width: 100%;
 }
+
 #top .header{
     margin-top: 0px;
 }
 #project_view h1 {
  font-size: 1.28571429rem;
 }
+
+.wmd-panel {
+    margin-left:0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    }
 
 
 #project_view h2 {
@@ -61,18 +106,28 @@ pre.toml_code {
 .ui.basic.segment.collapse {
     padding-top: 1ex;
     margin-top: 0px;
-    border-radius: .28571429rem;
+    border-radius: .98571429rem;
 }
 
-
+.ui.menu.rec-search .item:before{
+    width:0 ;
+}
 .data .content, .job .content, .recipe.content{
-        width: 0;
+    width: auto;
 }
 .narrow {
     margin-left: 15%;
     margin-right: 15%;
 }
 
+#tools {
+
+    display: none;
+}
+
+.tools .item{
+    padding-left: 35px !important;
+}
 .show.item.visible.transition {
     display: inline;
 }
@@ -82,9 +137,6 @@ pre.toml_code {
 }
 
 #img i {
-    position: absolute;
-    top: 0px;
-    right: 22%;
     font-size: 67px;
     opacity: .7;
 }
@@ -106,40 +158,103 @@ pre.toml_code {
 }
 
 
-#img.dimmer {
-    display: block;
-    position: relative;
-    height: 0px;
-    width: fit-content;
-    padding-right: .6em;
-    padding-left: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin-left: 0px
-}
 
-#img.running.dimmer > .mytiny.image {
-    opacity: .5
-}
-
-.job .text.container{
+.text.container{
     margin-left: 0 !important;
     margin-right: 0 !important;
     max-width: fit-content !important;
 
 }
 
+
+.sidenav {
+  height: 95%;
+  width: 230px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+      background-color: #fafafa;
+    box-shadow: inset -1px 0 0 #e5e5e5;
+  overflow-x: hidden;
+  //padding-top: 20px;
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+.dropdown {
+  position: fixed;
+  display: none;
+  z-index: 100001;
+}
+.lazy.list{
+    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
+    max-height: 50px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.lazy.segment{
+    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
+    min-height: 100px;
+    min-width: 250px;
+    width: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 250px;
+}
+
+.sidenav i{
+    margin-right: 10px;
+}
+.sidenav .segment.active{
+    background-color: var( --active-item) !important;
+}
+
+.sidenav .segment{
+    background-color: transparent;
+    border: none !important;
+}
+.sidenav a {
+
+  //text-decoration: none;
+  //font-size: 25px;
+  //color: #818181;
+  display: block;
+    color: gray;
+}
+
+.sidenav a:hover {
+  //color: #f1f1f1;
+}
+
+.main {
+    margin-left: 252px;
+    margin-top: 40px !important;
+    margin-right: 90px;
+
+}
+
+
 #img.dimmer > .loader {
     top: 20px;
     width: 79px !important;
 }
 
+#top{
+    //margin-left: 0 !important;
+    //width: 100%;
+}
+
 .CodeMirror {
     border: none;
     height: auto;
-/ / max-width: 927 px;
-/ / width: 107.6 %;
 
+}
+
+
+.job:hover{
+    box-shadow  !important;
 }
 
 .small-font {
@@ -151,24 +266,41 @@ pre.toml_code {
     left: calc(-1rem - 1.4em);
 }
 
-.ui.ribbon.label.obj {
-    left: 91.6%;
-    top:-5px;
+
+.wmd-button > span{
+    background-image: url('/static/pagedown/wmd-buttons.png') !important;
+}
+
+.wmd-button-bar{
+    background-color: transparent !important;
+}
+
+
+.wmd-preview{
+    padding:14px !important;
+    background: #ececec !important;
+    margin: 10px !important;
+    border-radius: 15px !important;
+}
+
+.wmd-prompt-background{
+    display: none !important;
+}
+
+.deletelink-box{
+    display: inline;
 }
 
 #clipboard .message .muted{
     margin-bottom: 1ex;
 }
 
-.ui.ribbon.label.info {
-    left: 14.3%;
-    float: right;
-}
-
 
 .ui.message.log {
-    width: 20%;
+    //width: 20%;
 }
+
+
 
 .ui.message.log > span:nth-child(2) {
     padding-right: 5px
@@ -194,7 +326,7 @@ pre.toml_code {
 }
 
 .top-title.header{
-    height: 2.5em;
+    //height: 2.5em;
 }
 
 .top-title.header .listing{
@@ -331,12 +463,12 @@ pre.toml_code {
     box-shadow: 0 2px 4px 0 rgba(34, 36, 38, .12), 0 .01em .001em 0 rgba(34, 36, 38, .15) !important;
 }
 
-.file.item:hover {
+.emphasize.item:hover {
     background-color: #f2f2f2;
 }
 
 .job .buttons, .data .buttons, .recipe .buttons{
-    height: fit-content;
+   height: min-content;
 }
 
 
@@ -401,12 +533,16 @@ figure {
     display: inline-block !important;
 }
 
+.opaque{
+    opacity: .5;
+}
 
 .ui.mytiny.image, .ui.mytiny.images .image, .ui.mytiny.images img, .ui.mytiny.images svg {
     width: 80px;
     height: 80px;
     font-size: .85714286rem;
     max-width: none;
+    margin-bottom: 0;
 }
 
 .count {
@@ -487,17 +623,22 @@ figure {
     font-weight: bold;
 }
 
+.ui.left.sidebar{
+    width: 15rem;
+}
+
+.data .items{
+    margin: 0px;
+}
+
+.data .segment{
+    padding: 0px;
+}
 
 .card .content:not(.extra):hover{
     cursor: pointer;
 }
 
-#clipboard{
-    position: absolute; /* or absolute */
-    text-align: center;
-    z-index: 100;
-    width: 79%;
-}
 
 .popover {
 
@@ -520,6 +661,26 @@ figure {
 }
 
 
+#side .item{
+    position: static;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell,
+                 "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+                  "Noto Color Emoji";
+}
+
+
+#topmenu .item{
+    color: #c7c7c7;
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+
+
+#side .prj.item{
+        border-left: orange solid;
+}
+
+
 #clipboard .message{
     display: contents
 }
@@ -531,7 +692,7 @@ figure {
 }
 
 .popover.success {
-    background-color: #fcfff5;
+    background-color: yellow;
     color: #2c662d;
 }
 
@@ -577,6 +738,31 @@ a:hover {
 }
 
 
+.parent {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.bottom.image {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.top.icon, .top.image, .top.loader {
+    position: absolute !important;
+    top: 5px !important;
+    left: 2px;
+
+}
+
+.top.loader{
+    display: inline;
+    font-size: 50px;
+    top: 24px !important;
+    left: 24px !important;
+}
+
 
 code {
     color: var(--code-color);
@@ -607,6 +793,17 @@ pre {
     font-size: smaller;
 }
 
+.simple .item{
+    border:none !important;
+}
+
+
+#run .run.segment{
+    width: 68.75%!important;
+}
+.item .buttons{
+    margin: auto;
+}
 
 .profile {
     margin-top: 17px !important;

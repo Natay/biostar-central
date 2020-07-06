@@ -66,6 +66,12 @@ def user_icon(user):
     context = dict(user=user, score=score)
     return context
 
+@register.inclusion_tag('widgets/privacy_label.html')
+def privacy_label(project):
+    context = dict(project=project)
+    return context
+
+
 
 @register.inclusion_tag('widgets/list_view.html', takes_context=True)
 def list_projects(context, target):
@@ -81,6 +87,11 @@ def list_projects(context, target):
     projects = projects.order_by("-rank", "-lastedit_date")
 
     return dict(projects=projects, user=user, target=target)
+
+
+@register.filter
+def is_job(obj):
+    return isinstance(obj, Job)
 
 
 @register.simple_tag
@@ -128,6 +139,26 @@ def find_fragments(source, target, nfrags=3, offset=25):
         fragments.append((left,  right, text))
 
     return fragments
+
+
+@register.inclusion_tag('widgets/clipboard.html', takes_context=True)
+def clipboard(context, project_uid):
+
+    request = context['request']
+    user = request.user
+    project = Project.objects.filter(uid=project_uid).first()
+    board = auth.recent_clipboard(request=request)
+    key, vals = board
+    board_count = len(vals)
+    movable = key in [const.COPIED_RECIPES, const.COPIED_DATA]
+    if project and auth.is_readable(user=user, obj=project) and board_count:
+        # Load items into clipboard
+        context = dict(count=board_count, board=key, is_recipe=key == const.COPIED_RECIPES,
+                       movable=movable)
+    else:
+        context = dict()
+
+    return context
 
 
 @register.filter
@@ -244,6 +275,12 @@ def type_label(data):
     return ""
 
 
+@register.inclusion_tag("widgets/project_details.html")
+def project_details(project):
+
+    return dict(project=project)
+
+
 @register.simple_tag
 def img(obj):
     """
@@ -253,6 +290,17 @@ def img(obj):
         return obj.image.url
     else:
         return urllib.parse.urljoin(settings.STATIC_URL, "images/placeholder.png")
+
+
+@register.inclusion_tag('parts/lazy_list.html')
+def init_lazy_project(user, page):
+
+    projects = auth.get_project_list(user=user)
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+    projects = projects[:3]
+    context = dict(objs=projects, page=page)
+
+    return context
 
 
 @register.inclusion_tag('widgets/show_messages.html')
@@ -276,11 +324,11 @@ def interface_options():
     return dict()
 
 
-@register.inclusion_tag('widgets/recipe_details.html', takes_context=True)
-def recipe_details(context, recipe):
+@register.inclusion_tag('parts/recipe_details.html', takes_context=True)
+def recipe_details(context, recipe, include_copy=True):
     user = context['request'].user
 
-    return dict(user=user, recipe=recipe, project=recipe.project)
+    return dict(user=user, recipe=recipe, project=recipe.project, include_copy=include_copy)
 
 
 @register.simple_tag

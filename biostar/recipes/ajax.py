@@ -7,6 +7,8 @@ from ratelimit.decorators import ratelimit
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse
 from django.template import Template, Context
+from django.core.paginator import Paginator
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.template import loader
 from django.conf import settings
@@ -14,7 +16,7 @@ from biostar.accounts.models import User
 from biostar.recipes.const import *
 from biostar.recipes.models import Job, Analysis, Data, Project, MAX_TEXT_LEN, Access
 from biostar.recipes.forms import RecipeInterface
-from biostar.recipes import auth
+from biostar.recipes import auth, util
 from django.shortcuts import render, redirect, reverse
 
 from biostar.recipes.forms import RecipeForm
@@ -45,6 +47,28 @@ MAX_SNIPPETS_PER_CATEGORY = 30
 
 MAX_TAGS = 5
 
+class CachedPaginator(Paginator):
+    """
+    Paginator that caches the count call.
+    """
+    COUNT_KEY = "COUNT_KEY"
+
+    def __init__(self, count_key='', *args, **kwargs):
+        self.count_key = count_key or self.COUNT_KEY
+        super(CachedPaginator, self).__init__(*args, **kwargs)
+
+    @property
+    def count(self):
+
+        if self.count_key not in cache:
+            value = super(CachedPaginator, self).count
+            logger.info("Setting paginator count cache")
+            cache.set(self.count_key, value, 100)
+
+        value = cache.get(self.count_key)
+
+        return value
+
 
 class ajax_error_wrapper:
     """
@@ -67,6 +91,35 @@ class ajax_error_wrapper:
             return func(request, *args, **kwargs)
 
         return _ajax_view
+
+
+def lazy_project_list(request):
+    """
+    Load list of projects lazily
+    """
+
+    # Get current page number
+    page = request.GET.get("page", 1)
+    page = int(page)
+    user = request.user
+
+    projects = auth.get_project_list(user=user)
+
+    # Filter for public projects
+    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
+    paginator = Paginator(projects, 3)
+    # Apply the post paging.
+    projects = paginator.get_page(page)
+
+    # Last page.
+    if page > paginator.num_pages:
+        return ajax_success(html="", msg="End of list.")
+
+    context = dict(objs=projects)
+    tmpl = loader.get_template('parts/lazy_item.html')
+    template = tmpl.render(context=context)
+
+    return ajax_success(html=template, msg="success", next=page+1)
 
 
 @ajax_error_wrapper(method="POST", login_required=True)
@@ -162,11 +215,11 @@ def preview_json(request):
 
     try:
         json_data = toml.loads(text)
-    except Exception as exc:
-        return ajax_error(msg=f"{exc}")
+    except toml.decoder.TomlDecodeError as exc:
+        msg = util.toml_error(exp_msg=exc, text=text)
+        return ajax_error(msg=f"{msg}")
 
     project = recipe.project
-
     # Render the recipe interface
     interface = RecipeInterface(request=request, json_data=json_data, project=project,
                                 add_captcha=False)
@@ -255,6 +308,7 @@ def manage_access(request):
 
     return ajax_success("Changed access.", no_access=no_access)
 
+
 @ensure_csrf_cookie
 @ajax_error_wrapper(method="POST", login_required=True)
 def copy_file(request):
@@ -284,6 +338,7 @@ def copy_file(request):
     copied = auth.copy_file(request=request, fullpath=path)
     return ajax_success(msg=f"{len(copied)} files copied.")
 
+
 @ensure_csrf_cookie
 @ajax_error_wrapper(method="POST", login_required=True)
 def copy_object(request):
@@ -293,22 +348,27 @@ def copy_object(request):
     # Map the query parameter to a clipboard and database model.
     mapper = {"data": (Data, COPIED_DATA),  "job": (Job, COPIED_RESULTS), "recipe": (Analysis, COPIED_RECIPES)}
     uid = request.POST.get('uid', '')
+    oid = request.POST.get('id', 0)
 
     # Get the clipboard to copy to
     clipboard = request.POST.get(settings.CLIPBOARD_NAME)
-    klass, board = mapper.get(clipboard, (None, None))
 
-    if not (klass and board):
+    klass, board = mapper.get(clipboard, (None, None))
+    if uid:
+        obj = klass.objects.filter(uid=uid).first()
+    else:
+        obj = klass.objects.filter(id=oid).first()
+
+    if not (klass and board and obj):
         return ajax_error("Object or board does not exist.")
 
-    obj = klass.objects.filter(uid=uid).first()
     is_readable = auth.is_readable(user=request.user, obj=obj)
 
     if not is_readable:
         return ajax_error('You do not have access to copy this object.')
 
     # Return current clipboard contents
-    copied = auth.copy_uid(request=request, uid=uid, board=board)
+    copied = auth.copy_uid(request=request, uid=obj.uid, board=board)
 
     return ajax_success(f"Copied. Clipboard contains :{len(copied)} objects.")
 
@@ -320,6 +380,35 @@ def ajax_clear_clipboard(request):
     auth.clear(request=request)
 
     return ajax_success(msg="Cleared clipboard. ", html="")
+
+
+@ajax_error_wrapper(method="POST", login_required=True)
+def ajax_move(request):
+
+    pid = request.POST.get("id", 0)
+    user = request.user
+    project = Project.objects.filter(id=pid).first()
+
+    # Get the board.
+    board = auth.recent_clipboard(request=request)
+    key, vals = board
+    next_url = auth.resolve_paste_url(key=key, project=project)
+
+    count = len(vals)
+
+    if not project:
+        return ajax_error(msg="Project does not exist.")
+
+    if not auth.is_writable(user=user, project=project):
+        return ajax_error(msg="You do not have access to move here.")
+
+    # Move objects in clipboard to given project.
+    auth.move(uids=vals, project=project, otype=key)
+
+    # Clear the clipboard after moving.
+    auth.clear(request=request)
+
+    return ajax_success(msg=f"Moved {count} items into project.", redirect=next_url)
 
 
 @ajax_error_wrapper(method="POST", login_required=True)
@@ -346,21 +435,18 @@ def ajax_paste(request):
         return ajax_error(msg="Clipboard is empty")
 
     # The target of this action is to clone.
-    clone = request.POST.get('target')
+    clone = request.POST.get('target') == CLONED_RECIPES
 
     # Paste the clipboard item into the project
     auth.paste(board=board, user=user, project=project, clone=clone)
 
-    data_url = reverse("data_list", kwargs=dict(uid=project.uid))
-    recipes_url = reverse("recipe_list", kwargs=dict(uid=project.uid))
-
     # Resolve the redirect url.
-    redir = recipes_url if key == COPIED_RECIPES else data_url
+    next_url = auth.resolve_paste_url(key=key, project=project)
 
     # Clear the clipboard after pasting.
     auth.clear(request=request)
 
-    return ajax_success(msg=f"Pasted {count} items into project.", redirect=redir)
+    return ajax_success(msg=f"Pasted {count} items into project.", redirect=next_url)
 
 
 @ensure_csrf_cookie
@@ -382,7 +468,8 @@ def ajax_clipboard(request):
     if project and auth.is_readable(user=user, obj=project) and count:
         # Load items into clipboard
         tmpl = loader.get_template('widgets/clipboard.html')
-        context = dict(count=count, board=key, is_recipe=key==COPIED_RECIPES)
+        movable = key in [COPIED_RECIPES, COPIED_DATA]
+        context = dict(count=count, board=key, is_recipe=key == COPIED_RECIPES, movable=movable)
         template = tmpl.render(context=context)
     else:
         template = ''

@@ -29,7 +29,17 @@ IP_WHITELIST = [
 
 ]
 
+
+PAGEDOWN_IMAGE_UPLOAD_ENABLED = True
+
+# Upload path for pagedown images, relative to media root.
+PAGEDOWN_IMAGE_UPLOAD_PATH = "images"
+
+
 BANNED_IPS = os.path.join(BASE_DIR, 'export', 'logs', 'banned.txt')
+
+# File containing list of tags, at least one being required
+#REQUIRED_TAGS = open()
 
 # The gravatar image used for users, applied to all users.
 GRAVATAR_ICON = ''
@@ -101,12 +111,12 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 
 SOCIALACCOUNT_ADAPTER = "biostar.accounts.adapter.SocialAccountAdapter"
 
+PAGEDOWN_APP = ['pagedown.apps.PagedownConfig']
+
 FORUM_APPS = [
 
     'biostar.forum.apps.ForumConfig',
-    'pagedown',
 ]
-
 
 # Additional middleware.
 MIDDLEWARE += [
@@ -126,7 +136,7 @@ ALLOWED_POST_TYPES = []
 # to avoid having to specify all the default styles
 PAGEDOWN_WIDGET_CSS = ('pagedown/demo/browser/demo.css',)
 
-INSTALLED_APPS = DEFAULT_APPS + FORUM_APPS + PLANET_APPS + ACCOUNTS_APPS + EMAILER_APP
+INSTALLED_APPS = DEFAULT_APPS + FORUM_APPS + PAGEDOWN_APP + PLANET_APPS + ACCOUNTS_APPS + EMAILER_APP
 
 FORUM_DOCS = os.path.join(DOCS_ROOT, "forum")
 

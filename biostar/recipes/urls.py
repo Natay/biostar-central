@@ -4,8 +4,8 @@ import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from biostar.accounts.urls import account_patterns
+from biostar.accounts.views import image_upload_view
 from biostar.recipes import views, api, ajax
-
 
 recipes_patterns = [
 
@@ -31,11 +31,13 @@ recipes_patterns = [
     # Project
     path(r'project/users/<str:uid>/', views.project_users, name='project_users'),
     path(r'project/create/', views.project_create, name='project_create'),
-    path(r'project/list/public/', views.project_list_public, name='project_list_public'),
-    path(r'project/list/private/', views.project_list_private, name='project_list_private'),
 
-    # This should not be needed/
-    path(r'project/list/', views.project_list_public, name='project_list'),
+    path(r'project/list/public/', views.project_list_public, name='project_list_public'),
+    path(r'my/projects/', views.project_list_private, name='project_list_private'),
+
+    # Redirects users to public or private projects.
+    path(r'project/list/', views.project_list, name='project_list'),
+
 
     path(r'project/view/<str:uid>/', views.project_info, name='project_view'),
     path(r'project/edit/<str:uid>/', views.project_edit, name='project_edit'),
@@ -48,6 +50,7 @@ recipes_patterns = [
     path(r'data/view/<str:uid>/', views.data_view, name='data_view'),
     path(r'data/edit/<str:uid>/', views.data_edit, name='data_edit'),
     path(r'data/upload/<str:uid>/', views.data_upload, name='data_upload'),
+    path(r'data/download/<str:uid>/', views.data_download, name='data_download'),
     path(r'data/delete/<str:uid>/', views.data_delete, name='data_delete'),
     re_path(r'^data/serve/(?P<uid>[-\w]+)/(?P<path>.+)$', views.data_serve, name='data_serve'),
 
@@ -62,6 +65,7 @@ recipes_patterns = [
     path(r'ajax/recipe/edit/<int:id>/', ajax.ajax_edit, name='ajax_recipe_edit'),
     # Renders an HTML form field base on the TOML input.
     path(r'ajax/field/render/', ajax.field_render, name='ajax_field_render'),
+    path(r'ajax/move/', ajax.ajax_move, name='ajax_move'),
 
     path(r'recipe/delete/<str:uid>/', views.recipe_delete, name='recipe_delete'),
     path(r'recipe/code/download/<str:uid>/', views.recipe_code_download, name='recipe_download'),
@@ -90,6 +94,9 @@ recipes_patterns = [
     path(r'api/project/<str:uid>/', api.project_info, name='project_api_info'),
     path(r'api/project/image/<str:uid>/', api.project_image, name='project_api_image'),
 
+    # Lazy listing
+    path(r'lazy/project/list/', ajax.lazy_project_list, name='lazy_project_ist'),
+
 ]
 
 
@@ -102,6 +109,12 @@ urlpatterns = [
 
 ]
 
+if settings.PAGEDOWN_IMAGE_UPLOAD_ENABLED:
+
+    urlpatterns += [
+        # Pagedown image upload url.
+        path('pagedown/image-upload/', image_upload_view, name="pagedown-image-upload")
+    ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT, show_indexes=True)
