@@ -1,4 +1,5 @@
 import toml as hjson
+import docker
 import time
 import os, logging, subprocess, pprint
 
@@ -19,6 +20,44 @@ logger = logging.getLogger('engine')
 logger.setLevel(logging.DEBUG)
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+def docker_run(job, stdout_fname, stderr_fname, script_name="recipe.sh"):
+    """
+    Run a job inside of a docker container.
+    Write access is given to the job directory so result files are written.
+    """
+    logger.info("Running job through docker ")
+
+    client = docker.from_env()
+
+    volumes = {
+        # Mount project dir as read only
+        job.project.get_data_dir(): {'bind': job.project.get_data_dir(), 'mode': 'ro'},
+        # Mount job dir as read/write
+        job.get_data_dir(): {'bind': job.get_data_dir(), 'mode': 'rw'},
+
+    }
+
+    # Add volumes from settings
+    #volumes.update(settings.VOLUMES)
+
+    mounts = [f"{job.project.get_data_dir()}:{job.project.get_data_dir()}:ro",
+              f"{job.get_data_dir()}:{job.get_data_dir()}:rw"]
+    envs = [f"SCRIPT={script_name}", f"STDOUT={stdout_fname}", f"STDERR={stderr_fname}"]
+
+    # Run recipe as a
+    # Create service as a
+    # res = client.services.create(image="recipes:latest", restart_policy="none", env=envs,
+    #                              name=job.uid, mounts=mounts, hostname="192.168.65.3:2377",
+    #                              workdir=job.get_data_dir(), stop_grace_period=150,
+    #                              )
+
+    # # TODO: limit kernel_memry.
+    res = client.containers.run("recipes:latest", environment=envs,
+                                auto_remove=True, name=job.uid,
+                                volumes=volumes, working_dir=job.get_data_dir())
+
 
 
 def finalize_job(job, data):
@@ -64,7 +103,6 @@ def finalize_job(job, data):
 
 
 def create_logs(job):
-
     work_dir = job.path
 
     # Runtime information will be saved in the log files.
@@ -201,19 +239,26 @@ def run(job, options={}):
 
         # Job must be authorized to run.
         if job.security != Job.AUTHORIZED:
-            raise Exception(f"Job security error: {job.get_security_display()}. Recipe security : {job.analysis.get_security_display()}")
+            raise Exception(
+                f"Job security error: {job.get_security_display()}. Recipe security : {job.analysis.get_security_display()}")
 
         # Switch the job state to RUNNING and save the script field.
         Job.objects.filter(pk=job.pk).update(state=Job.RUNNING,
                                              start_date=timezone.now(),
                                              script=script)
-        # Run the command.
-        proc = subprocess.run(command, cwd=work_dir, shell=True,
-                              stdout=open(stdout_fname, "w"),
-                              stderr=open(stderr_fname, "w"))
+        if settings.ISOLATE:
+            docker_run(job=job,
+                       stderr_fname=stderr_fname,
+                       stdout_fname=stdout_fname,
+                       script_name=script_name)
+        else:
+            # Run the command in current shell.
+            proc = subprocess.run(command, cwd=work_dir, shell=True,
+                                  stdout=open(stdout_fname, "w"),
+                                  stderr=open(stderr_fname, "w"))
 
-        # Raise an error if returncode is anything but 0.
-        proc.check_returncode()
+            # Raise an error if returncode is anything but 0.
+            proc.check_returncode()
 
         # Perform tasks at job finalization
         finalize_job(data=json_data, job=job)
@@ -250,7 +295,6 @@ def run(job, options={}):
         print(job.stderr_log)
 
     if job.owner.profile.notify:
-
         context = dict(subject=job.project.name, job=job)
 
         # Send notification emails

@@ -29,6 +29,9 @@ class Command(BaseCommand):
         parser.add_argument('--info', default='', help="Recipe description (optional)")
         parser.add_argument('--name', default='Recipe Name', help="Recipe name")
         parser.add_argument("--image", default='', help="Recipe image path")
+        parser.add_argument("--build_docker_image", default='',
+                            help="Build the base recipe image used to run containers.")
+
         parser.add_argument('--update', default=False, action="store_true",
                             help="Updates the recipe")
 

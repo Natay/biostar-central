@@ -24,6 +24,16 @@ MAX_PROJECTS = 20
 JOB_LOGDIR = 'runlog'
 
 
+# Run each job as an isolated process in a docker container.
+ISOLATE = True
+
+
+# Filesystems to mount inside of docker container when running recipes.
+# { "local file path" : {'bind': < container file path>, 'mode': rw ( read-write )| ro (read only ) }}
+# Mounting remote server possible.
+VOLUMES = {}
+
+
 PAGEDOWN_IMAGE_UPLOAD_ENABLED = True
 
 # Upload path for pagedown images, relative to media root.
