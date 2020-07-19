@@ -1,3 +1,6 @@
+{% load engine_tags %}
+
+<div class="sidenav">
 <div class="ui segments" style="border: none;box-shadow: none">
 
     <a class="ui segment {% activate active "latest_recipes" %}" href="{% url 'latest_recipes' %}">
@@ -106,4 +109,5 @@
         </a> release {{ VERSION }}
     </p>
     <div class="ui divider" style="border: 2px transparent;"></div>
+</div>
 </div>
