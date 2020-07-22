@@ -50,18 +50,30 @@
 
 {% include 'menu/sidebar.html' %}
 
+
 <div class="main">
     <div class="ui container" id="top">
 
         <div id="search-results"></div>
 
+        <input type="hidden" id="project_id" value="{{ project.id }}">
+
+        <div id="clipboard">{% clipboard project.uid %}</div>
+
         {% show_messages messages %}
+        {% csrf_token %}
         {% block body %}
-            Body
+            <div class="ui padded basic large segment">
+
+                {% block content %}
+                    Content
+                {% endblock %}
+            </div>
         {% endblock %}
 
     </div>
 </div>
+
 
 </body>
 

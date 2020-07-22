@@ -1,4 +1,4 @@
-{% extends "base_content.html" %}
+{% extends "base_template.html" %}
 {% load engine_tags %}
 
 
@@ -6,9 +6,6 @@
     {{ data.name }}
 {% endblock %}
 
-{% block ribbon %}
-    {% include 'widgets/upload_button.html' %}
-{% endblock %}
 
 {% block content %}
 
