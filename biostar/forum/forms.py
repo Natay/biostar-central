@@ -68,14 +68,11 @@ def informative_choices(choices):
 
 
 def common_elem(set_a, set_b):
-    # Return True if two sets share at least one
-    # common element.
-    if len(set_a.intersection(set_b)) > 0:
-        return True
-    return False
+    # Return True if two sets share at least one common element.
+    return len(set_a.intersection(set_b)) > 0
 
 
-def validate_tags_package(lst):
+def required_tags(lst):
     """
     Ensure at least one tag is present in the
     """
@@ -93,7 +90,7 @@ def validate_tags_package(lst):
     target_set = set(tags)
 
     if not common_elem(source_set, target_set):
-        url = reverse('packages_list')
+        url = settings.REQUIRED_TAGS_URL
         msg = mark_safe(f"At least one package from <a href='{url}' target='_blank'>this list</a> is required.")
         raise forms.ValidationError(msg)
 
@@ -159,7 +156,7 @@ class PostLongForm(forms.Form):
         tag_val = self.cleaned_data["tag_val"] or 'tag1,tag2'
         tags = set([x for x in tag_val.split(",") if x])
 
-        validate_tags_package(tags)
+        required_tags(tags)
 
         return ",".join(tags)
 

@@ -37,6 +37,7 @@ PAGEDOWN_IMAGE_UPLOAD_ENABLED = True
 # Upload path for pagedown images, relative to media root.
 PAGEDOWN_IMAGE_UPLOAD_PATH = "images"
 
+REQUIRED_TAGS_URL = "/"
 
 BANNED_IPS = os.path.join(BASE_DIR, 'export', 'logs', 'banned.txt')
 
@@ -144,6 +145,7 @@ FORUM_DOCS = os.path.join(DOCS_ROOT, "forum")
 
 # Add docs to static files directory
 STATICFILES_DIRS += [DOCS_ROOT]
+
 
 # Directory for the planets app.
 #PLANET_DIR = ''
