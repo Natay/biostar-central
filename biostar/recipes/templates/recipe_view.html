@@ -1,4 +1,4 @@
-{% extends "base_content.html" %}
+{% extends "base_template.html" %}
 {% load static %}
 {% load engine_tags %}
 
@@ -35,9 +35,6 @@
 {% block content %}
 
     <input type="hidden" id="recipe_id" value="{{ recipe.id }}">
-
-
-
 
                  <div class="ui divided link simple items" id="details" style="margin-top: 0px">
                     {% recipe_details recipe include_copy %}
