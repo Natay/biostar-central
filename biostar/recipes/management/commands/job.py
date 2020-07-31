@@ -44,6 +44,7 @@ def docker_run(job, stdout_fname, stderr_fname, script_name="recipe.sh"):
 
     mounts = [f"{job.project.get_data_dir()}:{job.project.get_data_dir()}:ro",
               f"{job.get_data_dir()}:{job.get_data_dir()}:rw"]
+
     envs = [f"SCRIPT={script_name}", f"STDOUT={stdout_fname}", f"STDERR={stderr_fname}"]
 
     # Run recipe as a
