@@ -53,11 +53,6 @@ class SiteNavigation(TestCase):
         c.login(username=self.username, email='tested@tested.com', password='tested')
         # Used to test with anon users
         anon_c = Client()
-        old = self.project.label
-
-        if change_label:
-            self.project.label = f"new-label-{auth.get_uuid(2)}"
-            self.project.save()
 
         def visit(pages, client):
             for url in pages:
@@ -73,8 +68,6 @@ class SiteNavigation(TestCase):
 
         visit(pages=urls, client=c)
         visit(pages=anon_urls, client=anon_c)
-        self.project.label = old
-        self.project.save()
 
 
     def test_public_pages(self):
@@ -89,7 +82,7 @@ class SiteNavigation(TestCase):
         ]
         anon_urls = [
             reverse("index"),
-            reverse('project_list_public'),
+            reverse('project_list'),
             reverse('project_view', kwargs=self.proj_params),
 
         ]
@@ -99,7 +92,7 @@ class SiteNavigation(TestCase):
             reverse('logout'),
             reverse('login'),
             reverse('search'),
-            reverse('project_list_private'),
+            reverse('project_list'),
             reverse('data_list', kwargs=self.proj_params),
             reverse('data_view', kwargs=self.data_params),
             reverse('data_upload', kwargs=self.proj_params),

@@ -20,6 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'recipes_favicon.ico' %}" type="image/x-icon"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     {% recaptcha_init %}
 
     {% compress css %}
@@ -33,6 +34,7 @@
 
     {% compress js %}
         <script src="{% static 'semantic.min.js' %}"></script>
+         <script src="{% static 'effects.js' %}"></script>
         <script src="{% static 'setup.js' %}{% randparam %}"></script>
         <script src="{% static 'engine.js' %}{% randparam %}"></script>
         <script src="{% static 'prism.js' %}{% randparam %}"></script>
@@ -44,34 +46,43 @@
 
 </head>
 <body>
-{% block menu %}
-    {% menubar request=request %}
-{% endblock %}
-
-{% include 'menu/sidebar.html' %}
 
 
-<div class="main">
-    <div class="ui container" id="top">
+<div class="ui container" id="top">
 
+    {% include 'site_header.html' %}
+
+    {% block menu %}
+        {% menubar request=request %}
+    {% endblock %}
+
+    <div class="ui bottom attached segment">
         <div id="search-results"></div>
-
-        <input type="hidden" id="project_id" value="{{ project.id }}">
-
-        <div id="clipboard">{% clipboard project.uid %}</div>
+        <div class="ui center aligned top-title header" >
+         <span>
+            {% block title %}
+                Title
+            {% endblock %}
+         </span>
+        </div>
 
         {% show_messages messages %}
-        {% csrf_token %}
-        {% block body %}
-            <div class="ui padded basic large segment">
 
-                {% block content %}
-                    Content
-                {% endblock %}
-            </div>
+        {% block body %}
+            Body
         {% endblock %}
 
     </div>
+
+    <div class="ui basic center aligned segment">
+        {% block footer %}
+            <p class="muted smaller">
+                Powered by the <a href="https://github.com/ialbert/biostar-central" class="ui image">
+                <img src="{% static 'images/badge-recipe.svg' %}"> </a> release {{ VERSION }}
+            </p>
+        {% endblock %}
+    </div>
+
 </div>
 
 

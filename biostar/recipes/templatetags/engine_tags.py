@@ -94,6 +94,30 @@ def is_job(obj):
     return isinstance(obj, Job)
 
 
+@register.inclusion_tag('widgets/pages.html', takes_context=True)
+def pages(context, objs, show_step=True):
+    request = context["request"]
+    url = request.path
+    return dict(objs=objs, url=url, show_step=show_step, request=request)
+
+
+@register.simple_tag
+def access_class(user, project):
+    """
+    CSS class returned based on access to a project
+    """
+
+    if user.is_anonymous:
+        return ""
+
+    if user == project.owner:
+        return "write_access"
+
+    obj = Access.objects.filter(user=user, project=project).first()
+
+    return obj.access if obj else ""
+
+
 @register.simple_tag
 def gravatar(user, size=80):
     style = "retro"
@@ -319,16 +343,19 @@ def recipe_form(form):
     return dict(form=form)
 
 
-@register.inclusion_tag('widgets/interface_options.html')
-def interface_options():
-    return dict()
-
-
 @register.inclusion_tag('parts/recipe_details.html', takes_context=True)
 def recipe_details(context, recipe, include_copy=True):
     user = context['request'].user
 
     return dict(user=user, recipe=recipe, project=recipe.project, include_copy=include_copy)
+
+
+@register.filter
+def writable(project, user):
+    """
+    Check if user has write access to the project.
+    """
+    return auth.is_writable(user=user, project=project)
 
 
 @register.simple_tag
@@ -342,18 +369,6 @@ def image_field(default=''):
     image_widget = image_field.widget.render('image', value=placeholder)
 
     return mark_safe(image_widget)
-
-
-@register.inclusion_tag('widgets/json_field.html')
-def json_field(json_text):
-    context = dict(json_text=json_text)
-    return context
-
-
-@register.inclusion_tag('widgets/template_field.html')
-def template_field(tmpl):
-    context = dict(template=tmpl)
-    return context
 
 
 @register.inclusion_tag('widgets/created_by.html')

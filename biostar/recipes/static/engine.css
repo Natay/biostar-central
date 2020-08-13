@@ -12,12 +12,40 @@
 }
 
 body {
-    //background-color: #f8f8f9 !important;
+
     padding-top: 0rem;
+
     font-family: "Lato", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     text-rendering: optimizeLegibility;
 }
 
+.ui.page-bar.segment {
+    text-align: center;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+}
+
+.ui-droppable-hover{
+    border: #10ee0a dotted 5px !important;
+    height: 50% !important;
+}
+
+.draggable{
+    cursor: grab;
+}
+
+
+.no-shadow {
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-box-shadow: none;
+}
+
+.float-right{
+    float:right
+}
 
 
 #side .active {
@@ -66,6 +94,11 @@ body {
 
 #top .header{
     margin-top: 0px;
+}
+
+#top{
+    width: 100%;
+
 }
 #project_view h1 {
  font-size: 1.28571429rem;
@@ -314,7 +347,7 @@ pre.toml_code {
 }
 
 .ui.menu .item.trusted {
-    color: #6d0080;
+    color: white;
 }
 
 
@@ -323,6 +356,16 @@ pre.toml_code {
     margin-bottom: 5px;
     padding: 8px !important;
     border-top: none !important;
+}
+
+.top-rank{
+    display: none;
+}
+
+.float-right.draggable{
+   padding-top: 30px;
+    height: 100%;
+
 }
 
 .top-title.header{
@@ -481,6 +524,13 @@ pre.toml_code {
     text-align: initial;
 }
 
+.write_access {
+    border-left: 20px solid #f1f8e9 !important;
+    //background-color: #f1f8e9 !important;
+}
+
+/* Fix for the name clash in semantic UI. */
+i.icon.mylist:before{content:"\f03a"}
 
 .ui.list.questions > .item > .description {
     margin: 0ex 0em 0ex 0em;

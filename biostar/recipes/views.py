@@ -4,10 +4,10 @@ import toml as hjson
 import hashlib
 import itertools
 import mistune
+
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,17 +15,19 @@ from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q, Count
 from django.template import loader
 from django.db.models import Sum
+from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.template import Template, Context
 from django.utils.safestring import mark_safe
+from django.core.cache import cache
 from ratelimit.decorators import ratelimit
 from sendfile import sendfile
 from biostar.accounts.models import User
 from biostar.recipes import tasks, auth, forms, const, search, util
-from biostar.recipes.decorators import read_access, write_access, exists
+from biostar.recipes.decorators import read_access, write_access
 from biostar.recipes.models import Project, Data, Analysis, Job, Access
 
 # The current directory
@@ -46,7 +48,25 @@ def valid_path(path):
 
 
 def index(request):
+
+    # Get the counts from cache
+    key = "INDEX_CACHE"
+
+    # Time to live in seconds.
+    ttl = 300
+    if key not in cache:
+        nusers = User.objects.all().count()
+        nprojects = Project.objects.all().count()
+        nrecipes = Analysis.objects.all().count()
+        nresults = Job.objects.all().count()
+        value = dict(nusers=nusers, nprojects=nprojects, nrecipes=nrecipes, nresults=nresults)
+        cache.set(key, value, ttl)
+    else:
+        value = cache.get(key, dict())
+
     context = dict(active="home")
+    context.update(value)
+
     return render(request, 'index.html', context)
 
 
@@ -112,7 +132,7 @@ def project_delete(request, uid):
 
     messages.success(request, msg)
 
-    return redirect(reverse("project_list_private"))
+    return redirect(reverse("project_list"))
 
 
 def search_bar(request):
@@ -183,50 +203,32 @@ def project_info(request, uid):
     return render(request, "project_info.html", context)
 
 
-def project_list_public(request):
-    user = request.user
-    projects = auth.get_project_list(user=user)
-
-    # Filter for public projects
-    projects = projects.filter(privacy=Project.PUBLIC)
-
-    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
-    context = dict(projects=projects, active="public")
-
-    return render(request, "project_list.html", context=context)
-
-
-def project_list_private(request):
-    user = request.user
-    projects = auth.get_project_list(user=user)
-
-    # Filter for private projects
-    #projects = projects.filter(privacy=Project.PRIVATE)
-
-    projects = projects.order_by("rank", "-date", "-lastedit_date", "-id")
-    context = dict(projects=projects, active="private")
-
-    return render(request, "project_list.html", context=context)
-
-
 def project_list(request):
+    user = request.user
+    projects = auth.get_project_list(user=user)
+    page = request.GET.get("page")
+    projects = projects.order_by("-rank")
 
-    # Redirect authenticated users to my projects.
-    if request.user.is_authenticated:
-        return redirect("project_list_private")
+    # Add pagination.
+    paginator = Paginator(projects, per_page=settings.PER_PAGE)
+    projects = paginator.get_page(page)
 
-    return redirect("project_list_public")
+    context = dict(projects=projects, active="project_list")
+    return render(request, "project_list.html", context=context)
 
 
 def latest_recipes(request):
     """
     """
-
+    page = request.GET.get("page")
     # Select public recipes
     recipes = Analysis.objects.filter(project__privacy=Project.PUBLIC, deleted=False)
-    recipes = recipes.order_by("-lastedit_date", "-rank")[:50]
+    recipes = recipes.order_by("-rank", "-lastedit_date")[:50]
 
     recipes = recipes.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
+
+    paginator = Paginator(recipes, per_page=settings.PER_PAGE)
+    recipes = paginator.get_page(page)
 
     context = dict(recipes=recipes, active="latest_recipes")
 
@@ -270,13 +272,13 @@ def get_counts(project, user=None):
     )
 
 
-
 @read_access(type=Project)
 def project_view(request, uid, template_name="project_info.html", active='info', show_summary=None,
                  extra_context={}):
     """
     This view handles the project info, data list, recipe list, result list views.
     """
+    page = request.GET.get('page')
 
     # The user making the request
     user = request.user
@@ -285,11 +287,16 @@ def project_view(request, uid, template_name="project_info.html", active='info',
     project = Project.objects.filter(uid=uid).first()
 
     # Select all the data in the project.
-    data_list = project.data_set.filter(deleted=False).order_by("rank", "-date").all()
-    recipe_list = project.analysis_set.filter(deleted=False).order_by("rank", "-date").all()
+    data_list = project.data_set.filter(deleted=False).order_by("-lastedit_date", "rank", "-date").all()
+    data_paginator = Paginator(data_list, per_page=settings.PER_PAGE)
+    data_list = data_paginator.get_page(page)
+
+    recipe_list = project.analysis_set.filter(deleted=False).order_by("-rank", "-lastedit_date", "-date").all()
 
     # Annotate each recipe with the number of jobs it has.
     recipe_list = recipe_list.annotate(job_count=Count("job", filter=Q(job__deleted=False)))
+    recipe_paginator = Paginator(recipe_list, per_page=settings.PER_PAGE)
+    recipe_list = recipe_paginator.get_page(page)
 
     job_list = project.job_set.filter(deleted=False).order_by("-lastedit_date").all()
 
@@ -303,6 +310,8 @@ def project_view(request, uid, template_name="project_info.html", active='info',
 
     # Add related content.
     job_list = job_list.select_related("analysis")
+    job_paginator = Paginator(job_list, per_page=settings.PER_PAGE)
+    job_list = job_paginator.get_page(page)
 
     # Who has write access
     write_access = auth.is_writable(user=user, project=project)
@@ -369,6 +378,7 @@ def data_view(request, uid):
     data = Data.objects.filter(uid=uid).first()
     project = data.project
     paths = auth.listing(root=data.get_data_dir())
+
     context = dict(data=data, project=project, paths=paths, serve_view="data_serve",
                    active='data', uid=data.uid, show_all=True)
     counts = get_counts(project)
@@ -382,7 +392,6 @@ def data_edit(request, uid):
     """
     Edit meta-data associated with Data.
     """
-
     data = Data.objects.filter(uid=uid).first()
     form = forms.DataEditForm(instance=data, initial=dict(type=data.type), user=request.user)
 
@@ -391,6 +400,7 @@ def data_edit(request, uid):
         if form.is_valid():
             form.save()
             return redirect(reverse("data_view", kwargs=dict(uid=data.uid)))
+
     context = dict(data=data, form=form, activate='Edit Data', project=data.project)
 
     context.update(get_counts(data.project))
@@ -418,8 +428,8 @@ def data_upload(request, uid):
     # Maximum data that may be uploaded.
     maximum_size = owner.profile.upload_size * 1024 * 1024
 
-    context = dict(project=project, form=form, active="data",
-                   maximum_size=maximum_size,
+    context = dict(project=project, form=form,
+                   maximum_size=maximum_size, activate='Upload data',
                    current_size=current_size)
 
     counts = get_counts(project)
@@ -585,8 +595,8 @@ def recipe_view(request, uid):
 
     # The recipe that needs to be edited.
     recipe = Analysis.objects.filter(uid=uid).annotate(
-        job_count=Count("job", filter=Q(job__deleted=False))
-    ).first()
+            job_count=Count("job", filter=Q(job__deleted=False))
+        ).first()
 
     # The project that recipe belongs to.
     project = recipe.project
@@ -620,7 +630,7 @@ def recipe_view(request, uid):
     return render(request, 'recipe_view.html', context)
 
 
-@read_access(type=Project)
+@read_access(type=Project, strict=True)
 def recipe_create(request, uid):
     # Get the project
     project = Project.objects.filter(uid=uid).first()
