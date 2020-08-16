@@ -9,6 +9,5 @@ RUN conda env create -f engine.yml
 # Create the qiime2 environment
 
 # Execute recipe in engine enviroment.
-CMD ["conda", "run", "-n", "engine", "/bin/bash", "-c", "bash $SCRIPT>$STDOUT 2>&1"]
-
+CMD ["conda", "run", "-n", "engine", "/bin/bash", "-c", "bash $SCRIPT>$STDOUT 2>$STDERR"]
 

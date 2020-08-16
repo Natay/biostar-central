@@ -13,6 +13,9 @@ if __name__ == "__main__":
     # Name of the script relative to working directory.
     script = "script.sh"
 
+    # The prebuilt docker image to run the container in.
+    image_name = "recipes:latest"
+
     # Mount current directory as read only
     # working_dir is mounted as write.
     read_mount = os.getcwd()
@@ -36,9 +39,12 @@ if __name__ == "__main__":
     client = docker.from_env()
 
     # Pass along the script name and other env variables.
-    envs = [f"SCRIPT={script}"]
+    stdout = ''
+    stderr = ''
+    envs = [f"SCRIPT={script}", ]
 
-    res = client.containers.run("recipes:latest",
+    # Run the docker container.
+    res = client.containers.run(image_name,
                                 environment=envs,
                                 auto_remove=True,
                                 name="testing",
