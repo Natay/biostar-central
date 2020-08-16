@@ -7,16 +7,22 @@
     --job-erorr: #db2828;
     --job-running: #f2711c;
     --job-queued: #00b5ad;
-    --active-item: #dae1dd;
 
 }
 
 body {
-
-    padding-top: 0rem;
-
+    background-color: #f8f8f9 !important;
+    //padding-top: 1rem;
     font-family: "Lato", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     text-rendering: optimizeLegibility;
+}
+
+#recipe-search{
+    border-radius: .2rem !important;
+    background-color: #72677f !important;
+    height: 35px ;
+    width: 254px ;
+    padding: 9px ;
 }
 
 .ui.page-bar.segment {
@@ -47,39 +53,6 @@ body {
     float:right
 }
 
-
-#side .active {
-    border-color: transparent !important;
-    //background-color: #F4FFD7;
-    border-top: 2px solid #DAFFBD;
-    border-bottom: 2px solid #DAFFBD;
-}
-
-#side .prj.active {
-    border-left: orange solid 8px !important;
-}
-
-#side .item:hover{
-    background-color: #F4FFD7;
-
-}
-
-.ui.menu.rec .item:before{
-    background: transparent;
-}
-
-
-#side .item{
-    color: #979797;
-}
-
-.ui.vertical.menu .item>i.icon {
-    float: none;
-    margin-right: .5rem;
-    margin-left: 0;
-}
-
-
 .recipes.grid .text.menu{
     width: auto;
 }
@@ -91,11 +64,16 @@ body {
 #interface .grid .labels .label{
     width: 100%;
 }
-
 #top .header{
     margin-top: 0px;
 }
 
+#topmenu{
+    box-shadow: none;
+    background: #292958;
+    margin-bottom: 0px;
+    border-radius: 0;
+}
 #top{
     width: 100%;
 
@@ -139,28 +117,18 @@ pre.toml_code {
 .ui.basic.segment.collapse {
     padding-top: 1ex;
     margin-top: 0px;
-    border-radius: .98571429rem;
+    border-radius: .28571429rem;
 }
 
-.ui.menu.rec-search .item:before{
-    width:0 ;
-}
+
 .data .content, .job .content, .recipe.content{
-    width: auto;
+        width: 0;
 }
 .narrow {
     margin-left: 15%;
     margin-right: 15%;
 }
 
-#tools {
-
-    display: none;
-}
-
-.tools .item{
-    padding-left: 35px !important;
-}
 .show.item.visible.transition {
     display: inline;
 }
@@ -199,95 +167,10 @@ pre.toml_code {
 
 }
 
-
-.sidenav {
-  height: 95%;
-  width: 230px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-      background-color: #fafafa;
-    box-shadow: inset -1px 0 0 #e5e5e5;
-  overflow-x: hidden;
-  //padding-top: 20px;
-    margin-top: 40px !important;
-    margin-bottom: 40px !important;
-}
-
-.dropdown {
-  position: fixed;
-  display: none;
-  z-index: 100001;
-}
-.lazy.list{
-    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
-    max-height: 50px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.lazy.segment{
-    box-shadow: 0 1px 34px 0 rgba(34,36,38,.15);
-    min-height: 100px;
-    min-width: 250px;
-    width: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 250px;
-}
-
-.sidenav i{
-    margin-right: 10px;
-}
-.sidenav .segment.active{
-    background-color: var( --active-item) !important;
-}
-
-.sidenav .segment{
-    background-color: transparent;
-    border: none !important;
-}
-.sidenav a {
-
-  //text-decoration: none;
-  //font-size: 25px;
-  //color: #818181;
-  display: block;
-    color: gray;
-}
-
-.sidenav a:hover {
-  //color: #f1f1f1;
-}
-
-.main {
-    margin-left: 252px;
-    margin-top: 40px !important;
-    margin-right: 90px;
-
-}
-
-
-#img.dimmer > .loader {
-    top: 20px;
-    width: 79px !important;
-}
-
-#top{
-    //margin-left: 0 !important;
-    //width: 100%;
-}
-
 .CodeMirror {
     border: none;
     height: auto;
 
-}
-
-
-.job:hover{
-    box-shadow  !important;
 }
 
 .small-font {
@@ -369,7 +252,7 @@ pre.toml_code {
 }
 
 .top-title.header{
-    //height: 2.5em;
+    height: 2.5em;
 }
 
 .top-title.header .listing{
@@ -673,9 +556,6 @@ figure {
     font-weight: bold;
 }
 
-.ui.left.sidebar{
-    width: 15rem;
-}
 
 .data .items{
     margin: 0px;
@@ -708,26 +588,6 @@ figure {
 
     border-color: #ebccd1;
 
-}
-
-
-#side .item{
-    position: static;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell,
-                 "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-                  "Noto Color Emoji";
-}
-
-
-#topmenu .item{
-    color: #c7c7c7;
-    padding-top:5px;
-    padding-bottom: 5px;
-}
-
-
-#side .prj.item{
-        border-left: orange solid;
 }
 
 
@@ -843,17 +703,6 @@ pre {
     font-size: smaller;
 }
 
-.simple .item{
-    border:none !important;
-}
-
-
-#run .run.segment{
-    width: 68.75%!important;
-}
-.item .buttons{
-    margin: auto;
-}
 
 .profile {
     margin-top: 17px !important;

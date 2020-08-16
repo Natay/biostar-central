@@ -1,7 +1,8 @@
+  
 {% load engine_tags %}
 {% load static %}
 
-<div  class="ui inverted horizontal menu" style="box-shadow: none; background: #292958;margin-bottom: 0px;border-radius: 0;" id="topmenu">
+<div  class="ui inverted horizontal menu" id="topmenu">
     <a class="ui {% activate active "home" %} item" href="{% url 'index' %}" style=" color: white!important;">
           <i class="home icon"></i> Home
     </a>
@@ -11,6 +12,8 @@
     </a>
     <a class="{% activate active "latest_recipes" %} item" href="{% url 'latest_recipes' %}">
         <i class="settings icon"></i>Latest Recipes
+    </a>
+
 
     {% if user.is_authenticated %}
 
@@ -57,13 +60,13 @@
 
     <div class="ui category search fluid item">
         <div class="ui transparent icon input">
-            <input class="prompt" id="recipe-search" type="text" placeholder="Search recipes..." style="border-radius: .2rem !important;background-color: #72677f !important;    height: 35px;
-    width: 254px;    padding: 9px !important;">
+            <input class="prompt" id="recipe-search" type="text" placeholder="Search recipes...">
             <i class="search link icon" style="padding-right: 20px;"></i>
         </div>
     </div>
 
     <div class="right menu">
+
 
         {% if user.is_authenticated %}
             <a class="{% activate "profile" tab %} {% if user.is_superuser %}trusted{% endif %} item"
@@ -103,4 +106,3 @@
     </div>
 
 </div>
-
