@@ -14,7 +14,7 @@ if __name__ == "__main__":
     script = "script.sh"
 
     # The prebuilt docker image to run the container in.
-    image_name = "recipes:latest"
+    image_name = "testing:latest"
 
     # Mount current directory as read only
     # working_dir is mounted as write.
