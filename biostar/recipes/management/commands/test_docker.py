@@ -1,24 +1,20 @@
 import docker
 
-import logging
-
-logger = logging.getLogger("engine")
-
-
 if __name__ == "__main__":
     import os
-
-    working_dir = os.path.join(os.getcwd(), "test_docker")
-
-    # Name of the script relative to working directory.
-    script = "script.sh"
-
-    # The prebuilt docker image to run the container in.
-    image_name = "testing:latest"
 
     # Mount current directory as read only
     # working_dir is mounted as write.
     read_mount = os.getcwd()
+
+    working_dir = ""
+    working_dir = os.path.join(os.getcwd(), "test_docker")
+
+    # Script inside of working directory.
+    script = "script.sh"
+
+    # The prebuilt docker image to run the container in.
+    image_name = "testing:latest"
 
     # Ensure working dir and script exist.
     os.makedirs(working_dir, exist_ok=True)
@@ -39,9 +35,7 @@ if __name__ == "__main__":
     client = docker.from_env()
 
     # Pass along the script name and other env variables.
-    stdout = ''
-    stderr = ''
-    envs = [f"SCRIPT={script}", ]
+    envs = [f"SCRIPT={script}"]
 
     # Run the docker container.
     res = client.containers.run(image_name,
@@ -51,4 +45,7 @@ if __name__ == "__main__":
                                 volumes=volumes,
                                 working_dir=working_dir)
 
-    print(res, "HELLO")
+    res = res.decode()
+
+    # Print what happens in the shell script
+    print(res)
